@@ -13,7 +13,7 @@ def send_mail(to_email, subject, message):
     msg['To'] = ', '.join(to_email)
     msg.set_content(message)
     server = smtplib.SMTP('smtp.qq.com')
-    server.login("xxxx@qq.com", "rxifcbikofsvbecg1")
+    server.login("xxxx@qq.com", "xxxx")
     server.send_message(msg)
     server.quit()
 
@@ -62,7 +62,7 @@ while True:
 
             if '提交成功' in r.text:
                 # 可以发送邮件，以免发生错误，不需要的话删除即可
-                send_mail(to_email=['blue_fisher@qq.com'],
+                send_mail(to_email=['xxxx@qq.com'],
                           subject=t.strftime('%Y-%m-%d %H:%M:%S') + '提交成功',
                           message=t.strftime('%Y-%m-%d %H:%M:%S') + '提交成功')
                 print(t.strftime('%Y-%m-%d %H:%M:%S'), '提交成功')
