@@ -25,10 +25,10 @@ if __name__ == "__main__":
     parser.add_argument('--id', '-i', type=str, default='xxxxxxxx')
     parser.add_argument('--pwd', '-p', type=str, default='xxxxxxxx')
     # 发送邮件的邮箱
-    parser.add_argument('--from-email', '-f' type=str, default='xxxx@qq.com')
-    parser.add_argument('--email-pwd', '-e' type=str, default='xxxxxxxx')
+    parser.add_argument('--from-email', '-f', type=str, default='xxxx@qq.com')
+    parser.add_argument('--email-pwd', '-e', type=str, default='xxxxxxxx')
     # 接受邮件的邮箱
-    parser.add_argument('--to-email', '-t' type=str, default='xxxx@qq.com')
+    parser.add_argument('--to-email', '-t', type=str, default='xxxx@qq.com')
     args = parser.parse_args()
 
     username = args.id
