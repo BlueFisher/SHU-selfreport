@@ -1,0 +1,10 @@
+email:
+  from: null
+  username: null
+  password: null
+  smtp: null
+
+users:
+  - id: "00000000"
+    pwd: "pwd"
+    email_to: "xxx@xxx.xxx"
