@@ -1,11 +1,12 @@
 import time
+import yaml
+import random
 import smtplib
 import argparse
 import requests
 import datetime as dt
 
 from bs4 import BeautifulSoup
-import yaml
 from email.message import EmailMessage
 
 
@@ -48,7 +49,7 @@ def report(username, password, email, ii):
         'p1$ChengNuo': 'p1_ChengNuo',
         'p1$BaoSRQ': t.strftime('%Y-%m-%d'),
         'p1$DangQSTZK': '良好',
-        'p1$TiWen': '37',
+        'p1$TiWen': str(round(random.uniform(35.2, 36.9), 1)),
         'p1$SuiSM': '绿色',
         'p1$ShiFJC': ['早餐', '午餐', '晚餐'],
         'F_TARGET': 'p1_ctl00_btnSubmit',
