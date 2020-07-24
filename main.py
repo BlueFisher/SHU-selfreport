@@ -68,9 +68,7 @@ if __name__ == "__main__":
                     'p1$DangQSTZK': '良好',
                     'p1$TiWen': '37',
                     'p1$SuiSM': '绿色',
-                    'p1$ShiFJC': '早餐',
-                    'p1$ShiFJC': '午餐',
-                    'p1$ShiFJC': '晚餐',
+                    'p1$ShiFJC': ['早餐', '午餐', '晚餐'],
                     'F_TARGET': 'p1_ctl00_btnSubmit',
                     'p1_Collapsed': 'false',
                 }, headers={
