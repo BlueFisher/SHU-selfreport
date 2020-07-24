@@ -72,7 +72,7 @@ def report(username, password, email, ii):
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     # 配置文件
-    parser.add_argument('--config', '-c', type=str, default='config.yaml' help='配置文件位置')
+    parser.add_argument('--config', '-c', type=str, default='config.yaml', help='配置文件位置')
     args = parser.parse_args()
     config_file_path = args.config
 
