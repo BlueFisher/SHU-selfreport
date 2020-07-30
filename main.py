@@ -22,7 +22,7 @@ def send_mail(to_email, subject, message):
     msg['From'] = config_file['email']['from']
     msg['To'] = ', '.join(to_email)
     msg.set_content(message)
-    server = smtplib.SMTP(config_file['email']['smtp'])
+    server = smtplib.SMTP_SSL(config_file['email']['smtp'], 465)
     server.login(config_file['email']['username'], config_file['email']['password'])
     server.send_message(msg)
     server.quit()
@@ -65,8 +65,8 @@ def report(username, password, email, ii):
 
     if email is not None:
         send_mail(to_email=[email],
-                  subject=t.strftime('%Y-%m-%d %H:%M:%S') + '提交不确定，请手动查看',
-                  message=t.strftime('%Y-%m-%d %H:%M:%S') + '提交不确定，请手动查看')
+                  subject=t.strftime('%Y-%m-%d %H:%M:%S') + f'{username} 提交不确定，请手动查看',
+                  message=t.strftime('%Y-%m-%d %H:%M:%S') + f'{username} 提交不确定，请手动查看')
     print(t.strftime('%Y-%m-%d %H:%M:%S'), '提交不确定，请手动查看')
 
 
