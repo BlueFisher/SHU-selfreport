@@ -22,7 +22,9 @@ def send_mail(to_email, subject, message):
     msg['From'] = config_file['email']['from']
     msg['To'] = ', '.join(to_email)
     msg.set_content(message)
-    server = smtplib.SMTP_SSL(config_file['email']['smtp'], 465)
+    # 自行修改SMTP协议
+    # server = smtplib.SMTP_SSL(config_file['email']['smtp'], 465)
+    server = smtplib.SMTP(config_file['email']['smtp'])
     server.login(config_file['email']['username'], config_file['email']['password'])
     server.send_message(msg)
     server.quit()
