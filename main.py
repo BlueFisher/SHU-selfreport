@@ -1,108 +1,29 @@
-import time
-import yaml
-import random
-import smtplib
 import argparse
-import requests
-import datetime as dt
 
-from bs4 import BeautifulSoup
-from email.message import EmailMessage
-
-
-config_file_path = 'config.yaml'
-
-
-def send_mail(to_email, subject, message):
-    with open(config_file_path) as f:
-        config_file = yaml.load(f, Loader=yaml.FullLoader)
-
-    msg = EmailMessage()
-    msg['Subject'] = subject
-    msg['From'] = config_file['email']['from']
-    msg['To'] = ', '.join(to_email)
-    msg.set_content(message)
-    # 自行修改SMTP协议
-    # server = smtplib.SMTP_SSL(config_file['email']['smtp'], 465)
-    server = smtplib.SMTP(config_file['email']['smtp'])
-    server.login(config_file['email']['username'], config_file['email']['password'])
-    server.send_message(msg)
-    server.quit()
-
-
-def report(username, password, email, ii):
-    print('report', username)
-    sess = requests.Session()
-    sess.post("https://newsso.shu.edu.cn/login", data={
-        'username': username,
-        'password': password,
-        'login_submit': '%25E7%2599%25BB%25E5%25BD%2595%252FLogin'
-    })
-    sess.get('https://newsso.shu.edu.cn/oauth/authorize?response_type=code&client_id=WUHWfrntnWYHZfzQ5QvXUCVy&redirect_uri=https%3a%2f%2fselfreport.shu.edu.cn%2fLoginSSO.aspx%3fReturnUrl%3d%252fDefault.aspx&scope=1')
-
-    url = 'https://selfreport.shu.edu.cn/XueSFX/HalfdayReport.aspx?t=' + ii
-    r = sess.get(url)
-
-    soup = BeautifulSoup(r.text, 'html.parser')
-    r = sess.post(url, data={
-        '__EVENTTARGET': 'p1$ctl00$btnSubmit',
-        '__VIEWSTATE': soup.find('input', attrs={'name': '__VIEWSTATE'})['value'],
-        '__VIEWSTATEGENERATOR': 'DC4D08A3',
-        'p1$ChengNuo': 'p1_ChengNuo',
-        'p1$BaoSRQ': t.strftime('%Y-%m-%d'),
-        'p1$DangQSTZK': '良好',
-        'p1$TiWen': str(round(random.uniform(35.2, 36.9), 1)),
-        'p1$SuiSM': '绿色',
-        'p1$ShiFJC': ['早餐', '午餐', '晚餐'],
-        'F_TARGET': 'p1_ctl00_btnSubmit',
-        'p1_Collapsed': 'false',
-    }, headers={
-        'X-Requested-With': 'XMLHttpRequest',
-        'X-FineUI-Ajax': 'true'
-    }, allow_redirects=False)
-
-    if '提交成功' in r.text:
-        print(t.strftime('%Y-%m-%d %H:%M:%S'), '提交成功')
-        return
-
-    if email is not None:
-        send_mail(to_email=[email],
-                  subject=t.strftime('%Y-%m-%d %H:%M:%S') + f'{username} 提交不确定，请手动查看',
-                  message=t.strftime('%Y-%m-%d %H:%M:%S') + f'{username} 提交不确定，请手动查看')
-    print(t.strftime('%Y-%m-%d %H:%M:%S'), '提交不确定，请手动查看')
+from utils.utils import test_report, test_send_email, auto_report
 
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
-    # 配置文件
-    parser.add_argument('--config', '-c', type=str, default='config.yaml', help='配置文件位置')
+    parser.add_argument('--test_report', '-r', action='store_true', help='测试账号是否正确')
+    parser.add_argument('--test_send_email', '-e', action='store_true', help='测试邮件发送模块')
+    parser.add_argument("--account", '-a', type=str, help="选择了测试邮件功能，使用该选项输入测试邮件收件邮箱")
     args = parser.parse_args()
-    config_file_path = args.config
+    #
+    setting_config_path = 'configs/setting_config.yaml'
+    report_config_path = 'configs/report_config.yaml'
 
-    # 立即提交一次
-    # 服务器上的时区是0时区，TODO 怎么在python里换时区？不想查了
-    t = dt.datetime.utcnow()
-    t = t + dt.timedelta(hours=8)
+    if args.test_report:
+        test_report(report_config_path)
 
-    ii = '1' if t.hour < 20 else '2'
-    with open(config_file_path) as f:
-        config_file = yaml.load(f, Loader=yaml.FullLoader)
-        for user in config_file['users']:
-            report(user['id'], user['pwd'], user['email_to'], ii)
+    if args.test_send_email:
+        if args.account is None:
+            print("邮件发送功能错误：请使用参数'--account'或'-a'输入收件邮箱")
+        else:
+            test_send_email(args.account, report_config_path)
 
-    while True:
-        t = dt.datetime.utcnow()
-        t = t + dt.timedelta(hours=8)
+    if args.test_report or args.test_send_email:
+        exit(0)
 
-        # 早上7点与晚上20点10分、11分左右打卡
-        if t.hour == 7 or t.hour == 20:
-            if t.minute in [10, 11]:
-                ii = '1' if t.hour == 7 else '2'
-                with open(config_file_path) as f:
-                    config_file = yaml.load(f, Loader=yaml.FullLoader)
-                    for user in config_file['users']:
-                        report(user['id'], user['pwd'], user['email_to'], ii)
+    auto_report(report_config_path, setting_config_path)
 
-                time.sleep(60)
-
-        time.sleep(60)
