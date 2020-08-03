@@ -69,8 +69,6 @@
 
    - 测试填写的所有账号密码是否正确
 
-     说明：没时间学网页内容分析，基于原版程序，但是原版程序如果账号写错，会强制退出，所以写了个测试模块，建议添加账户后使用一下命令进行测试。
-
      ```python
      python main.py -r
      ```
@@ -84,7 +82,7 @@
 4. 启动程序：
 
    ```python
-   nohup python main.py > shu_report.log中 2>&1 & 		# 针对Linux，启动程序，后台运行，输出结果导出shu_report.log中
+   nohup python main.py > shu_report.log 2>&1 & 		# 针对Linux，启动程序，后台运行，输出结果导出shu_report.log
    																											  # 如需设置开机自启动，请自行搜索网上教程
    ```
 
