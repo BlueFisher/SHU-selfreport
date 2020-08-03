@@ -1,0 +1,23 @@
+# 发送邮件所使用邮箱的设置
+# from、username、password、smtp填写时需要使用”“括起来
+email:
+  # 发送邮件的邮箱
+  from: null
+  # 登录邮箱的账号
+  username: null
+  # smtp服务授权码
+  password: null
+  # smtp服务器
+  smtp: null
+  # smtp服务器SSL协议端口号，很多邮箱默认为465，建议使用测试功能进行测试
+  port: 465
+
+# 用户设置
+# id：学号
+# pwd：密码
+# email_to：收件邮箱
+# 注意引号
+users:
+  - id: "user1"
+    pwd: "pwd"
+    email_to: "user1@xxx.com"
