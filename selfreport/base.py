@@ -25,9 +25,14 @@ def report(t, username, password, temperature):
     r = sess.get(url)
 
     soup = BeautifulSoup(r.text, 'html.parser')
+    view_state = soup.find('input', attrs={'name': '__VIEWSTATE'})
+
+    if view_state is None:
+        return False
+
     r = sess.post(url, data={
         '__EVENTTARGET': 'p1$ctl00$btnSubmit',
-        '__VIEWSTATE': soup.find('input', attrs={'name': '__VIEWSTATE'})['value'],
+        '__VIEWSTATE': view_state['value'],
         '__VIEWSTATEGENERATOR': 'DC4D08A3',
         'p1$ChengNuo': 'p1_ChengNuo',
         'p1$BaoSRQ': t.strftime('%Y-%m-%d'),
@@ -86,5 +91,3 @@ def get_time():
     # t = dt.datetime.now()
 
     return t
-
-
