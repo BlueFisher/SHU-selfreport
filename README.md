@@ -24,18 +24,18 @@
    ```yaml
    # 邮件提醒服务设置，如果不需要， 将email下的字段设置为null即可
    email:
-     from: "12345@qq.com"                    # 发送邮件的地址
-     username: "12345@qq.com"	       # 登陆邮箱的账号
-     password: "QQmima"	                   # smtp服务授权码，请进入邮箱设置进行查看
-     smtp: "smtp.qq.com"						 # smtp服务器
-     port: 465                                                  # smtp服务器SSL协议端口号，大多数邮箱默认为465
+     from: "12345@qq.com"                        # 发送邮件的地址
+     username: "12345@qq.com"             # 登陆邮箱的账号
+     password: "QQmima"                           # smtp服务授权码，请进入邮箱设置进行查看
+     smtp: "smtp.qq.com"                            # smtp服务器
+     port: 465                                                      # smtp服务器SSL协议端口号，大多数邮箱默认为465
    
    users:
-     - id: "user1"	                                           # 学号
-       pwd: "pwd"	                                        # 密码
-       email_to: "user1@qq.com"	      # 接受报送成功邮件的邮箱地址
+     - id: "user1"                                                # 学号
+       pwd: "pwd"                                              # 密码
+       email_to: "user1@qq.com"              # 接受报送成功邮件的邮箱地址
      - id: "user2"
-       pwd: "pwd"
+       pwd: "pwd"                         
        email_to: "user2@qq.com"
      - id: "user3"
        pwd: "pwd"
@@ -67,20 +67,18 @@
 
 3. 测试（可选）
 
-   - 测试填写的所有账号密码是否正确，如果填写错误，程序会报错。
-
-     - TODO：账号与密码错误会导致程序卡出，所以设计了这个功能用于防止运行时出错，没学网页内容分析，最近也没有时间学，希望有大神解决。
+   - 测试填写的所有账号密码是否正确:
 
      ```python
-     python main.py -r
+python main.py -r
      ```
-
-   - 测试邮箱服务是否可使用
+     
+   - 测试邮箱服务是否可使用:
 
      ```python
-     python main.py -e -a xxx@xx.com					# xxx@xx.com为接收测试邮件的账号
+    python main.py -e -a xxx@xx.com        # xxx@xx.com为接收测试邮件的账号
      ```
-
+   
 4. 启动程序：
 
    ```python

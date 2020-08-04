@@ -4,5 +4,5 @@ import yaml
 
 
 def load_config(config_path):
-    f = open(config_path)
-    return yaml.load(f, Loader=yaml.FullLoader)
+    with open(config_path, encoding='utf8') as f:
+        return yaml.load(f, Loader=yaml.FullLoader)
