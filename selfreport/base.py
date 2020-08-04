@@ -1,5 +1,6 @@
 # -- coding: utf-8 --
 
+import os
 import random
 import smtplib
 import requests
@@ -66,7 +67,9 @@ def send_mail(sender_config, to_email, subject, message):
     msg.set_content(message)
 
     try:
-        server = smtplib.SMTP_SSL(sender_config['smtp'], port=sender_config['port'])
+        server = smtplib.SMTP_SSL(
+            sender_config['smtp'],
+            port=sender_config['port'])
         server.login(sender_config['username'], sender_config['password'])
         server.send_message(msg)
         server.close()
@@ -91,3 +94,20 @@ def get_time():
     # t = dt.datetime.now()
 
     return t
+
+
+# 将日志信息写入文件中
+def write_log(message, log_file_path):
+    with open(log_file_path, 'a+', encoding="utf-8") as f:
+        if not os.path.getsize(log_file_path):
+            f.write(message)
+        else:
+            f.write("\n" + message)
+
+
+def read_file_as_str(file_path):
+    if not os.path.isfile(file_path):
+        raise TypeError(file_path + " does not exist")
+
+    all_the_text = open(file_path).read()
+    return all_the_text

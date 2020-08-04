@@ -1,18 +1,27 @@
-# “每日一报”填报成功是否发送邮件
-# true：发送
-# false：不发送
-send_email: false
+# 每日一报设置
+report_setting:
+  # “每日一报”填报成功是否发送邮件
+  # true：发送
+  # false：不发送
+  send_email: true
 
-# 早上申报时间,建议填写7点或8点，依据自己需要填写
-morning_hour: 7
+  # 早上申报时间,建议填写7点或8点，依据自己需要填写
+  morning_hour: 16
 
-# 晚上申报时间，建议填写20点
-night_hour: 20
+  # 晚上申报时间，建议填写20点
+  night_hour: 20
 
-# 申报的时间区间
-# 如morning_hour和night_hour填写为7和20，minute填为10，则会在7:10-7:11、20:10-20:11进行填报
-minute: 10
+  # 申报的时间区间
+  # 如morning_hour和night_hour填写为7和20，minute填为10，则会在7:10-7:11、20:10-20:11进行填报
+  minute: 57
 
-# 温度
-# 如填写36.3，则会在36.3-0.2， 36.3+0.2之间选择随机数填报
-temperature: 36.3
+  # 温度
+  # 如填写36.3，则会在36.3-0.2， 36.3+0.2之间选择随机数填报
+  temperature: 36.3
+
+# 管理员设置：是否让运行程序的人通过邮件收到每天生成的日志内容
+manager_setting:
+  send_email: true
+  email_to: "357183575@qq.com"
+  hours: 17
+  minute: 15
