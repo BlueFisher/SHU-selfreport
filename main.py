@@ -18,7 +18,7 @@ if __name__ == "__main__":
 
     if args.test_send_email:
         if args.account is None:
-            print("邮件发送功能错误：请使用参数'--account'或'-a'输入收件邮箱")
+            print("邮件发送测试错误：请使用参数'--account'或'-a'输入收件邮箱")
         else:
             test_send_email(args.account, report_config_path)
 
