@@ -20,6 +20,9 @@ def test_report(report_config_path):
 
 
 def test_send_email(addressee, report_config_path):
+    if addressee is None:
+        print("邮件发送测试错误：请使用参数'--account'或'-a'输入收件邮箱")
+
     sender_config = load_config(report_config_path)['email']
 
     if send_mail(sender_config, [addressee], "每日一报测试邮件", "每日一报邮件提醒功能正常开启"):
