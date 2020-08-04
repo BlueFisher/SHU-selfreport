@@ -105,6 +105,7 @@ def write_log(message, log_file_path):
             f.write("\n" + message)
 
 
+# 将文件中的内容读取为字符串
 def read_file_as_str(file_path):
     if not os.path.isfile(file_path):
         raise TypeError(file_path + " does not exist")

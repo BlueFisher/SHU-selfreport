@@ -5,8 +5,7 @@ from utils.utils import test_report, test_send_email, auto_report
 
 if __name__ == "__main__":
     setting_config_path = "configs/setting_config.yaml"
-    # report_config_path = "configs/report_config.yaml"
-    report_config_path = "../report_config.yaml"
+    report_config_path = "configs/report_config.yaml"
     log_path = "log/"
 
     parser = argparse.ArgumentParser()
