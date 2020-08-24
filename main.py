@@ -26,4 +26,3 @@ if __name__ == "__main__":
         exit(0)
 
     auto_report(report_config_path, setting_config_path)
-

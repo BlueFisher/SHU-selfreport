@@ -31,7 +31,7 @@ def test_send_email(addressee, report_config_path):
 def auto_report(report_config_path, setting_config_path):
     report_config = load_config(report_config_path)
     setting_config = load_config(setting_config_path)
-    
+
     while True:
         t = get_time()
 
@@ -44,7 +44,7 @@ def auto_report(report_config_path, setting_config_path):
                     now = get_time()
                     if is_successful:
                         print(now.strftime('%Y-%m-%d %H:%M:%S'), '提交成功')
-                        if setting_config['send_email']:
+                        if setting_config['send_email'] and user['email_to'] is not None:
                             is_send = send_mail(report_config['email'], [user['email_to']],
                                                 "{}月{}日每日一报提交成功".format(t.month, t.day),
                                                 t.strftime('%Y-%m-%d %H:%M:%S') + "{}的每日一报提交成功".format(user['id']))
@@ -52,15 +52,17 @@ def auto_report(report_config_path, setting_config_path):
                                 print("发送每日一报成功邮件给{}失败!如您已对邮件发送模块进行测试，则可能为该发送对象的邮件错误。".format(user['id']))
                     else:
                         print(now.strftime('%Y-%m-%d %H:%M:%S'), '提交失败')
-                        is_send = send_mail(report_config['email'], [user['email_to']],
-                                            "{}月{}日每日一报提交失败".format(t.month, t.day),
-                                            t.strftime('%Y-%m-%d %H:%M:%S') + "{}的每日一报提交失败".format(user['id']))
-                        if not is_send:
-                            print("发送每日一报失败邮件给{}失败!如您已对邮件发送模块进行测试，则可能为该发送对象的邮件错误。".format(user['id']))
+                        if user['email_to'] is not None:
+                            is_send = send_mail(report_config['email'], [user['email_to']],
+                                                "{}月{}日每日一报提交失败".format(t.month, t.day),
+                                                t.strftime('%Y-%m-%d %H:%M:%S') + "{}的每日一报提交失败".format(user['id']))
+                            if not is_send:
+                                print("发送每日一报失败邮件给{}失败!如您已对邮件发送模块进行测试，则可能为该发送对象的邮件错误。".format(user['id']))
 
                     # 如果有多个账号需要提交，不让程序在短时间内多次提交
                     time.sleep(int(random.uniform(5, 10)))
 
+                print('================================')
                 time.sleep(60)
 
         time.sleep(60)
