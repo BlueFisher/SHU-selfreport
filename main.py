@@ -1,6 +1,6 @@
 import argparse
 
-from utils.utils import test_report, test_send_email, auto_report
+from utils import test_report, test_send_email, auto_report
 
 
 if __name__ == "__main__":
@@ -9,9 +9,9 @@ if __name__ == "__main__":
     parser.add_argument('--test_send_email', '-e', action='store_true', help='测试邮件发送模块')
     parser.add_argument("--account", '-a', type=str, help="选择了测试邮件功能，使用该选项输入测试邮件收件邮箱")
     args = parser.parse_args()
-    #
-    setting_config_path = 'configs/setting_config.yaml'
-    report_config_path = 'configs/report_config.yaml'
+
+    setting_config_path = 'setting_config.yaml'
+    report_config_path = 'report_config.yaml'
 
     if args.test_report:
         test_report(report_config_path)
