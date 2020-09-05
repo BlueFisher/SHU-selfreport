@@ -123,12 +123,17 @@ def test_send_email(addressee, report_config_path):
 
 def auto_report(report_config_path, setting_config_path):
     setting_config = load_config(setting_config_path)
-
+    reported = False
     while True:
         t = get_time()
 
         if t.hour == setting_config["morning_hour"] or t.hour == setting_config['night_hour']:
-            if t.minute in [setting_config['minute'], setting_config['minute'] + 1]:
+            if t.minute >= setting_config['minute'] and t.minute <= setting_config['minute'] + 10:
+                if reported is True:
+                    # 避免在时间范围内重复提交
+                    time.sleep(int(random.uniform(60, 600)))
+                    continue
+
                 report_config = load_config(report_config_path)
 
                 for user in report_config['users']:
@@ -138,6 +143,7 @@ def auto_report(report_config_path, setting_config_path):
                     now = get_time()
                     if is_successful:
                         print(now.strftime('%Y-%m-%d %H:%M:%S'), '提交成功')
+                        reported = True
                         if setting_config['send_email'] and user['email_to'] is not None:
                             is_send = send_mail(report_config['email'], [user['email_to']],
                                                 "{}月{}日每日一报提交成功".format(t.month, t.day),
@@ -155,8 +161,11 @@ def auto_report(report_config_path, setting_config_path):
 
                     # 如果有多个账号需要提交，不让程序在短时间内多次提交
                     time.sleep(int(random.uniform(5, 10)))
-
                 print('================================')
                 time.sleep(60)
+            else:
+                # not in time
+                reported = False
 
-        time.sleep(60)
+        delay_time = int(random.uniform(60, 600))
+        time.sleep(delay_time)
