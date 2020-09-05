@@ -14,21 +14,34 @@ def report(t, username, password, temperature):
     ii = '1' if t.hour < 20 else '2'
 
     sess = requests.Session()
-    sess.post("https://newsso.shu.edu.cn/login", data={
-        'username': username,
-        'password': password,
-        'login_submit': '%25E7%2599%25BB%25E5%25BD%2595%252FLogin'
-    })
-    sess.get('https://newsso.shu.edu.cn/oauth/authorize?response_type=code&client_id=WUHWfrntnWYHZfzQ5QvXUCVy&redirect_uri=https%3a%2f%2fselfreport.shu.edu.cn%2fLoginSSO.aspx%3fReturnUrl%3d%252fDefault.aspx&scope=1')
+    while True:
+        try:
+            sess.post("https://newsso.shu.edu.cn/login", data={
+                'username': username,
+                'password': password,
+                'login_submit': '%25E7%2599%25BB%25E5%25BD%2595%252FLogin'
+            }, )
+            sess.get('https://newsso.shu.edu.cn/oauth/authorize?response_type=code&client_id=WUHWfrntnWYHZfzQ5QvXUCVy&redirect_uri=https%3a%2f%2fselfreport.shu.edu.cn%2fLoginSSO.aspx%3fReturnUrl%3d%252fDefault.aspx&scope=1')
+        except Exception as e:
+            print(e)
+            continue
+        break
 
-    url = 'https://selfreport.shu.edu.cn/XueSFX/HalfdayReport.aspx?t=' + ii
-    r = sess.get(url)
+    url = f'https://selfreport.shu.edu.cn/XueSFX/HalfdayReport.aspx?day={t.year}-{t.month}-{t.day}&t={ii}'
+    while True:
+        try:
+            r = sess.get(url)
+        except Exception as e:
+            print(e)
+            continue
+        break
 
     soup = BeautifulSoup(r.text, 'html.parser')
     view_state = soup.find('input', attrs={'name': '__VIEWSTATE'})
 
     if view_state is None:
         print('登录失败')
+        print(r.text)
         return False
 
     r = sess.post(url, data={
@@ -51,6 +64,7 @@ def report(t, username, password, temperature):
     if '提交成功' in r.text:
         return True
     else:
+        print(r.text)
         return False
 
 
@@ -110,6 +124,8 @@ def test_report(report_config_path):
             print(t.strftime('%Y-%m-%d %H:%M:%S'), "{} 提交成功".format(user['id']))
         else:
             print(t.strftime('%Y-%m-%d %H:%M:%S'), "{} 提交失败".format(user['id']))
+
+        time.sleep(5)
 
 
 def test_send_email(addressee, report_config_path):
