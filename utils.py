@@ -176,7 +176,7 @@ def auto_report(report_config_path, setting_config_path):
                                 print("发送每日一报失败邮件给{}失败!如您已对邮件发送模块进行测试，则可能为该发送对象的邮件错误。".format(user['id']))
 
                     # 如果有多个账号需要提交，不让程序在短时间内多次提交
-                    time.sleep(int(random.uniform(5, 10)))
+                    time.sleep(30)
                 print('================================')
                 time.sleep(60)
             else:
