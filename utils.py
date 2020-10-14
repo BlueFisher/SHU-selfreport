@@ -16,11 +16,11 @@ def report(t, username, password, temperature):
     sess = requests.Session()
     while True:
         try:
-            sess.post("https://newsso.shu.edu.cn/login", data={
+            r = sess.get('https://selfreport.shu.edu.cn/Default.aspx')
+            sess.post(r.url, data={
                 'username': username,
-                'password': password,
-                'login_submit': '%25E7%2599%25BB%25E5%25BD%2595%252FLogin'
-            }, )
+                'password': password
+            })
             sess.get('https://newsso.shu.edu.cn/oauth/authorize?response_type=code&client_id=WUHWfrntnWYHZfzQ5QvXUCVy&redirect_uri=https%3a%2f%2fselfreport.shu.edu.cn%2fLoginSSO.aspx%3fReturnUrl%3d%252fDefault.aspx&scope=1')
         except Exception as e:
             print(e)
