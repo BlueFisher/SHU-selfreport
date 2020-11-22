@@ -8,12 +8,11 @@
 
 在 `config.yaml` 中设置所有需要打卡的学号密码
 
-**本程序自带一键补报功能**，如需补报，定位到 `main.py` 第136行
+**本程序自带一键补报功能**，如需补报，定位到 `main.py` 第9行
 
 ```python
-# 如果需要补报，则将 `args` 第三个参数改为 `True`，第四个参数为补报的月份区间，默认是10到11月
-# 如果不需要补报，则将 `args` 第三个参数改为 `False`
-t = threading.Thread(target=report_threading, args=(sess, user['id'], True, range(10, 12)), daemon=True)
+NEED_BEFORE = True  # 如需补报则置为True，否则False
+MONTHS = [10, 11]  # 补报的月份，默认10月、11月
 ```
 
 4. 启动程序：

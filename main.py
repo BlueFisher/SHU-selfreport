@@ -6,6 +6,8 @@ import requests
 import yaml
 from bs4 import BeautifulSoup
 
+NEED_BEFORE = True  # 如需补报则置为True，否则False
+MONTHS = [10, 11]  # 补报的月份，默认10月、11月
 
 
 # 获取东八区时间
@@ -63,7 +65,7 @@ def login(username, password):
     return sess
 
 
-def report(sess, username, t, temperature=37):
+def report(sess, t, temperature=37):
     ii = '1' if t.hour < 20 else '2'
     url = f'https://selfreport.shu.edu.cn/XueSFX/HalfdayReport.aspx?day={t.year}-{t.month}-{t.day}&t={ii}'
     while True:
@@ -99,44 +101,48 @@ def report(sess, username, t, temperature=37):
     }, allow_redirects=False)
 
     if '提交成功' or '历史信息不能修改' in r.text:
-        print(f'{username} {t} 提交成功')
+        print(f'{t} 提交成功')
+        return True
     else:
         print(r.text)
+        return False
 
 
 with open('config.yaml', encoding='utf8') as f:
     config = yaml.load(f, Loader=yaml.FullLoader)
+last_login_time = 0
+user_login_status = {user: {'sess': None, 'has_before': False} for user in config}
 
+while True:
+    for user in config:
+        print(f'======{user}======')
+        if user_login_status[user]['sess'] is None:
+            if time.time() - last_login_time > 60:
+                user_login_status[user]['sess'] = login(user, config[user]['pwd'])
+                last_login_time = time.time()
+            else:
+                print('等待登录')
 
-def report_threading(sess, username, need_before=False, months=None):
-    if need_before:
-        for month in months:
-            for day in range(1, 32):
-                for hour in [9, 21]:
-                    try:
-                        t = dt.datetime(2020, month, day, hour)
-                    except ValueError:
-                        continue
+        sess = user_login_status[user]['sess']
+        if sess:
+            if NEED_BEFORE and not user_login_status[user]['has_before']:
+                for month in MONTHS:
+                    for day in range(1, 32):
+                        for hour in [9, 21]:
+                            try:
+                                t = dt.datetime(2020, month, day, hour)
+                            except ValueError:
+                                continue
 
-                    report(sess, username, t)
+                            if not report(sess, t):
+                                user_login_status[user]['sess'] = None
+                                user_login_status[user]['has_before'] = False
+                                break
+                            else:
+                                user_login_status[user]['has_before'] = True
 
-    while True:
-        t = get_time()
-        report(sess, username, t)
-        # 每个小时填报一次
-        time.sleep(60 * 60)
+            t = get_time()
+            if not report(sess, t):
+                user_login_status[user]['sess'] = None
 
-
-for user in config['users']:
-    sess = login(user['id'], user['pwd'])
-    if sess:
-        # !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-        # 如果需要补报，则将 `args` 第三个参数改为 `True`，第四个参数为补报的月份区间，默认是10到11月
-        # 如果不需要补报，则将 `args` 第三个参数改为 `False`
-        t = threading.Thread(target=report_threading, args=(sess, user['id'], True, range(10, 12)), daemon=True)
-        t.start()
-
-    # 每次登录间隔60秒，否则登陆系统会报错
     time.sleep(60)
-
-t.join()
