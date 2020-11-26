@@ -8,6 +8,8 @@ from bs4 import BeautifulSoup
 
 NEED_BEFORE = True  # 如需补报则置为True，否则False
 MONTHS = [10, 11]  # 补报的月份，默认10月、11月
+ZAIXIAO = '宝山'  # 宝山、嘉定或延长
+XIAN = '宝山区'  # 宝山区、嘉定区或静安区
 
 
 # 获取东八区时间
@@ -92,13 +94,13 @@ def report(sess, t, temperature=37):
         'p1$DangQSTZK': '良好',
         'p1$TiWen': str(temperature),
         'p1$TiWen': '37',
-        'p1$ZaiXiao': '宝山',
+        'p1$ZaiXiao': ZAIXIAO,
         'p1$ddlSheng$Value': '上海',
         'p1$ddlSheng': '上海',
         'p1$ddlShi$Value': '上海市',
         'p1$ddlShi': '上海市',
-        'p1$ddlXian$Value': '宝山区',
-        'p1$ddlXian': '宝山区',
+        'p1$ddlXian$Value': XIAN,
+        'p1$ddlXian': XIAN,
         'p1$FengXDQDL': '否',
         'p1$TongZWDLH': '否',
         'p1$XiangXDZ': '上海大学',
