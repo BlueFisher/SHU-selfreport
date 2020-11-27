@@ -1,6 +1,5 @@
 import datetime as dt
 import time
-import threading
 
 import requests
 import yaml
@@ -9,8 +8,8 @@ from fState import F_STATE_GENERATOR
 
 NEED_BEFORE = True  # 如需补报则置为True，否则False
 MONTHS = [10, 11]  # 补报的月份，默认10月、11月
-ZAIXIAO = '宝山'  # 宝山、嘉定或延长
-XIAN = '宝山区'  # 宝山区、嘉定区或静安区
+ZAIXIAO = "宝山"  # 宝山、嘉定或延长
+XIAN = "宝山区"  # 宝山区、嘉定区或静安区
 
 
 # 获取东八区时间
@@ -125,7 +124,7 @@ def report(sess, t, temperature=37):
         'p1_GeLSM_Collapsed': 'false',
         'p1_Collapsed': 'false',
         'F_TARGET': 'p1_ctl00_btnSubmit',
-        'F_STATE': F_STATE_GENERATOR().updated_F_STATE()
+        'F_STATE': F_STATE_GENERATOR().updated_F_STATE(t, ZAIXIAO, XIAN, ii),
     }, headers={
         'X-Requested-With': 'XMLHttpRequest',
         'X-FineUI-Ajax': 'true'
