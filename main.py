@@ -201,7 +201,7 @@ def send_report_result(username, status):
         'status': status
     })
     if r.status_code == 200:
-        print('已提交结果')
+        print(f'{username} 已提交结果 {status}')
 
 
 with open('config.yaml', encoding='utf8') as f:
@@ -234,7 +234,6 @@ elif args.server:
             t = get_time()
             result = report(sess, t, xiaoqu)
             send_report_result(username, result)
-            print(f'已填报 {username}')
         else:
             print('没有需要填报的数据')
 
@@ -276,4 +275,3 @@ else:
                     user_login_status[user]['sess'] = None
 
         time.sleep(60 * 10)
-        
