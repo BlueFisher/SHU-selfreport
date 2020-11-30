@@ -4,7 +4,6 @@ import time
 import requests
 import yaml
 import argparse
-import json
 from bs4 import BeautifulSoup
 from fState import F_STATE_GENERATOR
 
@@ -69,7 +68,7 @@ def login(username, password):
 
 
 def report(sess, t, xiaoqu='宝山', temperature=37):
-    ii = '1' if t.hour < 20 else '2'
+    ii = '1' if t.hour < 19 else '2'
     if xiaoqu == '宝山':
         xian = '宝山区'
     elif xiaoqu == '嘉定':
@@ -158,7 +157,8 @@ def request_for_auto_report(username, sess):
     for k, v in sess.cookies.items():
         cookie[k] = v
 
-    token = json.dumps(cookie)
+    token = sess.cookies['.ncov2019selfreport']
+
     print(token)
 
     r = requests.post('http://shu-report.shusnjl.cn/update', json={
@@ -183,15 +183,8 @@ def request_for_saved_sess():
     r = requests.get('http://shu-report.shusnjl.cn/token')
     if r.status_code == 200:
         res = r.json()
-        token = res['token']
-        try:
-            cookie = json.loads(token)
-        except:
-            print(f'token错误 {token}')
-            return
         sess = requests.Session()
-        for k, v in cookie.items():
-            sess.cookies.set(k, v)
+        sess.cookies.set('.ncov2019selfreport', res['token'])
         return res['id'], res['campus'], sess
 
 
@@ -202,7 +195,7 @@ def send_report_result(username, status):
     })
     if r.status_code == 200:
         if status:
-            print(f'已提交结果')
+            print(f'{username} 已提交结果')
         else:
             print(f'{username} 已提交失败结果')
 
@@ -240,7 +233,7 @@ elif args.server:
         else:
             print('没有需要填报的数据')
 
-        time.sleep(60 * 5)
+        time.sleep(2)
 else:
     last_login_time = 0
     user_login_status = {user: {'sess': None, 'has_before': False} for user in config}
