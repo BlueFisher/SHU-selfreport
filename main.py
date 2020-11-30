@@ -75,7 +75,7 @@ def report(sess, t, xiaoqu='宝山', temperature=37):
     elif xiaoqu == '嘉定':
         xian = '嘉定区'
     elif xiaoqu == '延长':
-        xian = '经验区'
+        xian = '静安区'
 
     url = f'https://selfreport.shu.edu.cn/XueSFX/HalfdayReport.aspx?day={t.year}-{t.month}-{t.day}&t={ii}'
     while True:
@@ -201,7 +201,10 @@ def send_report_result(username, status):
         'status': status
     })
     if r.status_code == 200:
-        print(f'{username} 已提交结果 {status}')
+        if status:
+            print(f'已提交结果')
+        else:
+            print(f'{username} 已提交失败结果')
 
 
 with open('config.yaml', encoding='utf8') as f:
