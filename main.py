@@ -79,6 +79,7 @@ def report(sess, t, xiaoqu='宝山', temperature=37):
     url = f'https://selfreport.shu.edu.cn/XueSFX/HalfdayReport.aspx?day={t.year}-{t.month}-{t.day}&t={ii}'
     while True:
         try:
+            sess.get('https://newsso.shu.edu.cn/oauth/authorize?response_type=code&client_id=WUHWfrntnWYHZfzQ5QvXUCVy&redirect_uri=https%3a%2f%2fselfreport.shu.edu.cn%2fLoginSSO.aspx%3fReturnUrl%3d%252fDefault.aspx&scope=1')
             r = sess.get(url)
         except Exception as e:
             print(e)
@@ -89,7 +90,10 @@ def report(sess, t, xiaoqu='宝山', temperature=37):
     view_state = soup.find('input', attrs={'name': '__VIEWSTATE'})
 
     if view_state is None:
-        print(r.text)
+        if '上海大学统一身份认证' in r.text:
+            print('登录信息过期')
+        else:
+            print(r.text)
         return False
 
     while True:
@@ -157,7 +161,7 @@ def request_for_auto_report(username, sess):
     for k, v in sess.cookies.items():
         cookie[k] = v
 
-    token = sess.cookies['.ncov2019selfreport']
+    token = sess.cookies['SHU_OAUTH2_SESSION'] + '#' + sess.cookies['.ncov2019selfreport']
 
     print(token)
 
@@ -169,9 +173,9 @@ def request_for_auto_report(username, sess):
 
     if r.status_code == 200:
         if r.json()['msg'] == 'insert success':
-            print('已提交到自动填报服务器，如果支持我们，请记得捐赠呦')
+            print(f'已提交到自动填报服务器，可以去http://shu-report.shusnjl.cn/user/{username}查看')
         elif r.json()['msg'] == 'update success':
-            print('已更新到自动填报服务器，如果支持我们，请记得捐赠呦')
+            print(f'已更新到自动填报服务器，可以去http://shu-report.shusnjl.cn/user/{username}查看')
         else:
             print(r.json())
     else:
@@ -180,19 +184,34 @@ def request_for_auto_report(username, sess):
 
 
 def request_for_saved_sess():
-    r = requests.get('http://shu-report.shusnjl.cn/token')
+    while True:
+        try:
+            r = requests.get('http://shu-report.shusnjl.cn/token')
+        except Exception as e:
+            print(e)
+            continue
+        break
     if r.status_code == 200:
         res = r.json()
         sess = requests.Session()
-        sess.cookies.set('.ncov2019selfreport', res['token'])
+        token = res['token'].split('#')
+        if len(token) == 2:
+            sess.cookies.set('SHU_OAUTH2_SESSION', token[0])
+            sess.cookies.set('.ncov2019selfreport', token[1])
+
         return res['id'], res['campus'], sess
 
 
 def send_report_result(username, status):
-    r = requests.post('http://shu-report.shusnjl.cn/status', json={
-        'id': username,
-        'status': status
-    })
+    try:
+        r = requests.post('http://shu-report.shusnjl.cn/status', json={
+            'id': username,
+            'status': status
+        })
+    except Exception as e:
+        print(e)
+        return
+
     if r.status_code == 200:
         if status:
             print(f'{username} 已提交结果')
@@ -215,13 +234,15 @@ if args.request and args.server:
     exit()
 
 if args.request:
-    for user in config:
+    for i, user in enumerate(config):
         print(f'======{user}======')
         sess = login(user, config[user]['pwd'])
         if sess:
             request_for_auto_report(user, sess)
-        print(f'等待一分钟')
-        time.sleep(60)
+
+        if i < len(config) - 1:
+            print(f'等待一分钟')
+            time.sleep(60)
 elif args.server:
     while True:
         response = request_for_saved_sess()
