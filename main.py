@@ -6,8 +6,9 @@ import yaml
 import argparse
 from bs4 import BeautifulSoup
 from fState import F_STATE_GENERATOR
+import base64
 
-NEED_BEFORE = True  # 如需补报则置为True，否则False
+NEED_BEFORE = False  # 如需补报则置为True，否则False
 MONTHS = [10, 11]  # 补报的月份，默认10月、11月
 XIAOQU = "宝山"  # 宝山、嘉定或延长
 
@@ -35,11 +36,14 @@ def login(username, password):
     while True:
         try:
             r = sess.get('https://selfreport.shu.edu.cn/Default.aspx')
+            code = r.url.split('/')[-1]
+            url_param = eval(base64.b64decode(code).decode("utf-8"))
+            state = url_param['state']
             sess.post(r.url, data={
                 'username': username,
                 'password': password
             })
-            sess.get('https://newsso.shu.edu.cn/oauth/authorize?response_type=code&client_id=WUHWfrntnWYHZfzQ5QvXUCVy&redirect_uri=https%3a%2f%2fselfreport.shu.edu.cn%2fLoginSSO.aspx%3fReturnUrl%3d%252fDefault.aspx&scope=1')
+            sess.get(f'https://newsso.shu.edu.cn/oauth/authorize?response_type=code&client_id=WUHWfrntnWYHZfzQ5QvXUCVy&redirect_uri=https%3a%2f%2fselfreport.shu.edu.cn%2fLoginSSO.aspx%3fReturnUrl%3d%252fDefault.aspx&scope=1&state={state}')
         except Exception as e:
             print(e)
             continue
@@ -57,7 +61,7 @@ def login(username, password):
     soup = BeautifulSoup(r.text, 'html.parser')
     view_state = soup.find('input', attrs={'name': '__VIEWSTATE'})
 
-    if view_state is None:
+    if view_state is None or 'invalid_grant' in r.text:
         print(f'{username} 登录失败')
         print(r.text)
         return
