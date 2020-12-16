@@ -5,8 +5,9 @@ import requests
 import yaml
 from bs4 import BeautifulSoup
 from fState import F_STATE_GENERATOR
+import base64
 
-NEED_BEFORE = True  # 如需补报则置为True，否则False
+NEED_BEFORE = False  # 如需补报则置为True，否则False
 MONTHS = [10, 11]  # 补报的月份，默认10月、11月
 ZAIXIAO = "宝山"  # 宝山、嘉定或延长
 XIAN = "宝山区"  # 宝山区、嘉定区或静安区
@@ -35,11 +36,17 @@ def login(username, password):
     while True:
         try:
             r = sess.get('https://selfreport.shu.edu.cn/Default.aspx')
+            code = r.url.split('/')[-1]
+            url_param = eval(base64.b64decode(code).decode("utf-8"))
+            state = url_param['state']
             sess.post(r.url, data={
                 'username': username,
                 'password': password
             })
-            sess.get('https://newsso.shu.edu.cn/oauth/authorize?response_type=code&client_id=WUHWfrntnWYHZfzQ5QvXUCVy&redirect_uri=https%3a%2f%2fselfreport.shu.edu.cn%2fLoginSSO.aspx%3fReturnUrl%3d%252fDefault.aspx&scope=1')
+            messageBox = sess.get(f'https://newsso.shu.edu.cn/oauth/authorize?response_type=code&client_id=WUHWfrntnWYHZfzQ5QvXUCVy&redirect_uri=https%3a%2f%2fselfreport.shu.edu.cn%2fLoginSSO.aspx%3fReturnUrl%3d%252fDefault.aspx&scope=1&state={state}')
+            if 'tz();' in messageBox.text:  # 调用tz()函数在首层提醒未读
+                myMessages(sess)
+
         except Exception as e:
             print(e)
             continue
@@ -57,7 +64,7 @@ def login(username, password):
     soup = BeautifulSoup(r.text, 'html.parser')
     view_state = soup.find('input', attrs={'name': '__VIEWSTATE'})
 
-    if view_state is None:
+    if view_state is None or 'invalid_grant' in r.text:
         print(f'{username} 登录失败')
         print(r.text)
         return
@@ -65,6 +72,20 @@ def login(username, password):
     print(f'{username} 登录成功')
 
     return sess
+
+
+def myMessages(sess):
+    print('1')
+    url = f'https://selfreport.shu.edu.cn/MyMessages.aspx'
+    unRead = sess.get(url).text
+    import re
+    unReadNum = len([i.start() for i in re.finditer('（未读）', unRead)])
+    allAddrs = [i.start() for i in re.finditer('/ViewMessage.aspx', unRead)]
+
+    for i in range(unReadNum):
+        sess.get(f'https://selfreport.shu.edu.cn/ViewMessage.aspx?id=' + unRead[allAddrs[i]+21:allAddrs[i]+28])
+
+    return
 
 
 def report(sess, t, temperature=37):
@@ -171,8 +192,8 @@ while True:
                             else:
                                 user_login_status[user]['has_before'] = True
 
-            t = get_time()
-            if not report(sess, t):
-                user_login_status[user]['sess'] = None
+            # t = get_time()
+            # if not report(sess, t):
+            #     user_login_status[user]['sess'] = None
 
     time.sleep(60 * 10)
