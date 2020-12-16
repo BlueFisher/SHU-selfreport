@@ -76,7 +76,6 @@ def login(username, password):
 
 
 def myMessages(sess):
-    print('1')
     url = f'https://selfreport.shu.edu.cn/MyMessages.aspx'
     unRead = sess.get(url).text
     unReadNum = len([i.start() for i in re.finditer('（未读）', unRead)])
