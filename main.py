@@ -9,6 +9,8 @@ import yaml
 from bs4 import BeautifulSoup
 
 from fState import F_STATE_GENERATOR
+import base64
+import re
 
 NEED_BEFORE = False  # 如需补报则置为True，否则False
 START_DT = dt.datetime(2020, 11, 10)  # 需要补报的起始日期
@@ -45,7 +47,10 @@ def login(username, password):
                 'username': username,
                 'password': password
             })
-            sess.get(f'https://newsso.shu.edu.cn/oauth/authorize?response_type=code&client_id=WUHWfrntnWYHZfzQ5QvXUCVy&redirect_uri=https%3a%2f%2fselfreport.shu.edu.cn%2fLoginSSO.aspx%3fReturnUrl%3d%252fDefault.aspx&scope=1&state={state}')
+            messageBox = sess.get(f'https://newsso.shu.edu.cn/oauth/authorize?response_type=code&client_id=WUHWfrntnWYHZfzQ5QvXUCVy&redirect_uri=https%3a%2f%2fselfreport.shu.edu.cn%2fLoginSSO.aspx%3fReturnUrl%3d%252fDefault.aspx&scope=1&state={state}')
+            if 'tz();' in messageBox.text:  # 调用tz()函数在首层提醒未读
+                myMessages(sess)
+
         except Exception as e:
             print(e)
             continue
@@ -71,6 +76,18 @@ def login(username, password):
     print(f'{username} 登录成功')
 
     return sess
+
+
+def myMessages(sess):
+    url = f'https://selfreport.shu.edu.cn/MyMessages.aspx'
+    unRead = sess.get(url).text
+    unReadNum = len([i.start() for i in re.finditer('（未读）', unRead)])
+    allAddrs = [i.start() for i in re.finditer('/ViewMessage.aspx', unRead)]
+
+    for i in range(unReadNum):
+        sess.get(f'https://selfreport.shu.edu.cn/ViewMessage.aspx?id=' + unRead[allAddrs[i] + 21:allAddrs[i] + 28])
+
+    return
 
 
 def report(sess, t, xiaoqu='宝山', temperature=37):
