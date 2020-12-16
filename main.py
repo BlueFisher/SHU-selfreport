@@ -1,15 +1,17 @@
+import base64
 import datetime as dt
+import os
 import time
+from pathlib import Path
 
 import requests
 import yaml
-import argparse
 from bs4 import BeautifulSoup
+
 from fState import F_STATE_GENERATOR
-import base64
 
 NEED_BEFORE = False  # 如需补报则置为True，否则False
-MONTHS = [10, 11]  # 补报的月份，默认10月、11月
+START_DT = dt.datetime(2020, 11, 10)  # 需要补报的起始日期
 XIAOQU = "宝山"  # 宝山、嘉定或延长
 
 
@@ -155,144 +157,40 @@ def report(sess, t, xiaoqu='宝山', temperature=37):
         print(f'{t} 提交成功')
         return True
     else:
+        print(f'{t} 提交失败')
         print(r.text)
         return False
 
 
-def request_for_auto_report(username, sess):
-    print(username)
-    cookie = dict()
-    for k, v in sess.cookies.items():
-        cookie[k] = v
+if __name__ == "__main__":
+    with open(Path(__file__).resolve().parent.joinpath('config.yaml'), encoding='utf8') as f:
+        config = yaml.load(f, Loader=yaml.FullLoader)
 
-    token = sess.cookies['SHU_OAUTH2_SESSION'] + '#' + sess.cookies['.ncov2019selfreport']
+    if 'users' in os.environ:
+        for user_password in os.environ['users'].split(';'):
+            user, password = user_password.split(',')
+            config[user] = {
+                'pwd': password
+            }
 
-    print(token)
-
-    r = requests.post('http://shu-report.shusnjl.cn/update', json={
-        'id': username,
-        'campus': XIAOQU,
-        'token': token
-    })
-
-    if r.status_code == 200:
-        if r.json()['msg'] == 'insert success':
-            print(f'已提交到自动填报服务器，可以去http://shu-report.shusnjl.cn/user/{username}查看')
-        elif r.json()['msg'] == 'update success':
-            print(f'已更新到自动填报服务器，可以去http://shu-report.shusnjl.cn/user/{username}查看')
-        else:
-            print(r.json())
-    else:
-        print('提交失败')
-        print(r.text)
-
-
-def request_for_saved_sess():
-    while True:
-        try:
-            r = requests.get('http://shu-report.shusnjl.cn/token')
-        except Exception as e:
-            print(e)
+    for user in config:
+        if user in ['00000000', '11111111']:
             continue
-        break
-    if r.status_code == 200:
-        res = r.json()
-        sess = requests.Session()
-        token = res['token'].split('#')
-        if len(token) == 2:
-            sess.cookies.set('SHU_OAUTH2_SESSION', token[0])
-            sess.cookies.set('.ncov2019selfreport', token[1])
 
-        return res['id'], res['campus'], sess
-
-
-def send_report_result(username, status):
-    try:
-        r = requests.post('http://shu-report.shusnjl.cn/status', json={
-            'id': username,
-            'status': status
-        })
-    except Exception as e:
-        print(e)
-        return
-
-    if r.status_code == 200:
-        if status:
-            print(f'{username} 已提交结果')
-        else:
-            print(f'{username} 已提交失败结果')
-
-
-with open('config.yaml', encoding='utf8') as f:
-    config = yaml.load(f, Loader=yaml.FullLoader)
-
-parser = argparse.ArgumentParser()
-parser.add_argument('--request', action='store_true')
-parser.add_argument('--server', action='store_true')
-
-args = parser.parse_args()
-
-
-if args.request and args.server:
-    print("参数错误")
-    exit()
-
-if args.request:
-    for i, user in enumerate(config):
         print(f'======{user}======')
         sess = login(user, config[user]['pwd'])
+
         if sess:
-            request_for_auto_report(user, sess)
+            now = get_time()
 
-        if i < len(config) - 1:
-            print(f'等待一分钟')
-            time.sleep(60)
-elif args.server:
-    while True:
-        response = request_for_saved_sess()
-        if response:
-            username, xiaoqu, sess = response
-            t = get_time()
-            result = report(sess, t, xiaoqu)
-            send_report_result(username, result)
-        else:
-            print('没有需要填报的数据')
+            if NEED_BEFORE:
+                t = START_DT
+                while t < now:
+                    report(sess, t + dt.timedelta(hours=8), XIAOQU)
+                    report(sess, t + dt.timedelta(hours=20), XIAOQU)
 
-        time.sleep(2)
-else:
-    last_login_time = 0
-    user_login_status = {user: {'sess': None, 'has_before': False} for user in config}
+                    t = t + dt.timedelta(days=1)
 
-    while True:
-        for user in config:
-            print(f'======{user}======')
-            if user_login_status[user]['sess'] is None:
-                if time.time() - last_login_time > 60:
-                    user_login_status[user]['sess'] = login(user, config[user]['pwd'])
-                    last_login_time = time.time()
-                else:
-                    print('等待登录')
+            report(sess, get_time(), XIAOQU)
 
-            sess = user_login_status[user]['sess']
-            if sess:
-                if NEED_BEFORE and not user_login_status[user]['has_before']:
-                    for month in MONTHS:
-                        for day in range(1, 32):
-                            for hour in [9, 21]:
-                                try:
-                                    t = dt.datetime(2020, month, day, hour)
-                                except ValueError:
-                                    continue
-
-                                if not report(sess, t, XIAOQU):
-                                    user_login_status[user]['sess'] = None
-                                    user_login_status[user]['has_before'] = False
-                                    break
-                                else:
-                                    user_login_status[user]['has_before'] = True
-
-                t = get_time()
-                if not report(sess, t, XIAOQU):
-                    user_login_status[user]['sess'] = None
-
-        time.sleep(60 * 10)
+        time.sleep(60)
