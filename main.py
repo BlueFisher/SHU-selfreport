@@ -6,6 +6,7 @@ import yaml
 from bs4 import BeautifulSoup
 from fState import F_STATE_GENERATOR
 import base64
+import re
 
 NEED_BEFORE = False  # 如需补报则置为True，否则False
 MONTHS = [10, 11]  # 补报的月份，默认10月、11月
@@ -78,7 +79,6 @@ def myMessages(sess):
     print('1')
     url = f'https://selfreport.shu.edu.cn/MyMessages.aspx'
     unRead = sess.get(url).text
-    import re
     unReadNum = len([i.start() for i in re.finditer('（未读）', unRead)])
     allAddrs = [i.start() for i in re.finditer('/ViewMessage.aspx', unRead)]
 
@@ -192,8 +192,8 @@ while True:
                             else:
                                 user_login_status[user]['has_before'] = True
 
-            # t = get_time()
-            # if not report(sess, t):
-            #     user_login_status[user]['sess'] = None
+            t = get_time()
+            if not report(sess, t):
+                user_login_status[user]['sess'] = None
 
     time.sleep(60 * 10)
