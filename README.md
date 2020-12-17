@@ -36,6 +36,14 @@ crontab -e
 0 8,20 * * * python -u /xxx/main.py 2>&1 >> /xxx/shu_report.log
 ```
 
+如果你不确定你服务器的时区，可以每小时运行一次：
+
+```bash
+# 程序每天8点与20点执行一次，并将结果输出至shu_report.log
+# 注意python的路径，main.py与输出日志shu_report.log的绝对路径
+0 * * * * python -u /xxx/main.py 2>&1 >> /xxx/shu_report.log
+```
+
 ### 2. 你没有服务器，使用 github actions（测试中）
 
 1. fork 该仓库至你的仓库下
@@ -45,7 +53,15 @@ crontab -e
 `NAME` 设置为 `USERS`
 `VALUE` 设置为 `学号1,密码1;学号2,密码2` 的格式，注意逗号与分号的区分，学号密码之间用逗号，每两个学号之间用分号，如果只有一个学号密码则不需要加分号
 
-4. actions会自动执行
+![](images/secrets.png)
+
+4. 定位到你仓库下的 `Actions` 选项卡，点击 `Enable workflow`
+
+![](images/enable_actions.png)
+
+5. Actions 已经启动完成，每隔一个小时会执行一次，每执行一次会在 `Actions` 选项卡下生成一个报告
+
+![](images/actions.png)
 
 ## 依赖
 
