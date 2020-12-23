@@ -1,4 +1,4 @@
-# 上海大学在校生每日两报自动打卡
+# 上海大学在校生健康之路每日两报自动打卡
 
 程序为python脚本文件，修改配置文件相关信息，设置后台运行脚本，脚本会根据配置文件信息自动进行每日两报。
 
@@ -22,7 +22,7 @@ START_DT = dt.datetime(2020, 11, 10)  # 需要补报的起始日期
 XIAOQU = "宝山"  # 宝山、嘉定或延长
 ```
 
-针对linux，编辑定时执行程序cron
+针对Ubuntu，编辑定时执行程序cron
 
 ```bash
 crontab -e
@@ -36,15 +36,19 @@ crontab -e
 0 8,20 * * * python -u /xxx/main.py 2>&1 >> /xxx/shu_report.log
 ```
 
-如果你不确定你服务器的时区，可以每小时运行一次：
+如果你服务器是UTC时区，则为
 
 ```bash
-# 程序每天8点与20点执行一次，并将结果输出至shu_report.log
-# 注意python的路径，main.py与输出日志shu_report.log的绝对路径
+0 11,23 * * * python -u /xxx/main.py 2>&1 >> /xxx/shu_report.log
+```
+
+如果你不确定你服务器的时区，也可以每小时运行一次：
+
+```bash
 0 * * * * python -u /xxx/main.py 2>&1 >> /xxx/shu_report.log
 ```
 
-### 2. 你没有服务器，使用 github actions（测试中）
+### 2. 你没有服务器，使用 github actions（推荐）
 
 1. fork 该仓库至你的仓库下
 2. 定位到你的仓库的`Settings`的`Secrets`选项卡
