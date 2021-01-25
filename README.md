@@ -61,6 +61,8 @@ crontab -e
 
 **在该模式下请不要开启补报功能功能**
 
+#### 你第一次Fork
+
 1. fork 该仓库至你的仓库下
 2. 定位到你的仓库的`Settings`的`Secrets`选项卡
 3. 添加secret（New repository secret）
@@ -78,6 +80,13 @@ crontab -e
 5. Actions 已经启动完成，每隔一个小时会执行一次，每执行一次会在 `Actions` 选项卡下生成一个报告
 
 ![](images/actions.png)
+
+
+#### 你第二次Fork，要更新原先内容
+
+![](images/update_fork.gif)
+
+
 
 ## 依赖
 
