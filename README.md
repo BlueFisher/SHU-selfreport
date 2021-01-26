@@ -59,7 +59,7 @@ crontab -e
 
 ### 2. 你没有服务器，使用 github actions（推荐）
 
-**在该模式下请不要开启补报功能功能**
+**在该模式下请不要开启补报功能**
 
 #### 你第一次Fork
 
@@ -89,6 +89,8 @@ crontab -e
 #### 你第二次Fork，要更新原先内容
 
 ![](images/update_fork.gif)
+
+或者最简单的方法， 删除你fork的项目，重新fork
 
 
 
