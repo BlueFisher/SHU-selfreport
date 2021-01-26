@@ -77,7 +77,11 @@ crontab -e
 
 ![](images/enable_actions.png)
 
-5. Actions 已经启动完成，每隔一个小时会执行一次，每执行一次会在 `Actions` 选项卡下生成一个报告
+5. 此时Actions 已经启动完成，每天上午和下午七点（UTC+8）各执行一次，每执行一次会在 `Actions` 选项卡下生成一个报告。
+
+   如果需要对报送功能进行测试，可以点击 `run workflow` 按钮，立即进行一次运行。
+
+   ![](images/run_workflow.png)
 
 ![](images/actions.png)
 
@@ -99,3 +103,4 @@ crontab -e
 ## 感谢
 
 感谢各位 contributors 所做的贡献。
+
