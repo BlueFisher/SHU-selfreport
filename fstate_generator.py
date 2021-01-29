@@ -71,17 +71,17 @@ def get_last_report(sess, t):
     t = re.findall(r'^.*//\]', r.text, re.MULTILINE)[0]
     htmls = t.split(';var ')
     for i, h in enumerate(htmls):
-        if 'p1$ShiFSH' in h:
+        if 'ShiFSH' in h:
             ShiFSH = _html_to_json(htmls[i - 1])['SelectedValue']
-        if '"p1$ShiFZX' in h:
+        if '"ShiFZX' in h:
             ShiFZX = _html_to_json(htmls[i - 1])['SelectedValue']
-        if 'p1$ddlSheng' in h:
+        if 'ddlSheng' in h:
             ddlSheng = _html_to_json(htmls[i - 1])['SelectedValueArray'][0]
-        if 'p1$ddlShi' in h:
+        if 'ddlShi' in h:
             ddlShi = _html_to_json(htmls[i - 1])['SelectedValueArray'][0]
-        if 'p1$ddlXian' in h:
+        if 'ddlXian' in h:
             ddlXian = _html_to_json(htmls[i - 1])['SelectedValueArray'][0]
-        if 'p1$XiangXDZ' in h:
+        if 'XiangXDZ' in h:
             XiangXDZ = _html_to_json(htmls[i - 1])['Text']
 
     return ShiFSH, ShiFZX, ddlSheng, ddlShi, ddlXian, XiangXDZ
