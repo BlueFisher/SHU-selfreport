@@ -6,9 +6,9 @@
 
 支持一键补报功能。
 
-支持每日一报/每日两报。目前暂时同时进行每日一报和每日两报。
+支持每日一报/每日两报。目前暂时在早上7点自动填报一次。
 
-为了避免过多的配置，感谢[@Lanszhang131](https://github.com/Lanszhang131/DailyReport_SHU)的思路，**利用前一天的报送信息进行填报，所以如果你真实地提交过一次，那每天会重复填报。由于默认是早7晚7填报，所以如果你想用真实信息的话第一次在晚上7点填报后修改下信息。**
+为了避免过多的配置，感谢[@Lanszhang131](https://github.com/Lanszhang131/DailyReport_SHU)的思路，**利用前一天的报送信息进行填报，所以如果你真实地提交过一次，那每天会重复填报。由于默认是早7填报，所以如果你想用真实信息的话第一次在早上7点填报后修改下信息。**
 
 ## 免责申明
 
@@ -42,13 +42,13 @@ crontab -e
 ```bash
 # 程序每天8点与20点执行一次，并将结果输出至shu_report.log
 # 注意python的路径，main.py与输出日志shu_report.log的绝对路径
-0 8,20 * * * python -u /xxx/main.py 2>&1 >> /xxx/shu_report.log
+0 7 * * * python -u /xxx/main.py 2>&1 >> /xxx/shu_report.log
 ```
 
 如果你服务器是UTC时区，则为
 
 ```bash
-0 11,23 * * * python -u /xxx/main.py 2>&1 >> /xxx/shu_report.log
+0 23 * * * python -u /xxx/main.py 2>&1 >> /xxx/shu_report.log
 ```
 
 如果你不确定你服务器的时区，也可以每小时运行一次：
@@ -77,7 +77,7 @@ crontab -e
 
 ![](images/enable_actions.png)
 
-5. 此时Actions 已经启动完成，每天上午和下午七点（UTC+8）各执行一次，每执行一次会在 `Actions` 选项卡下生成一个报告。
+5. 此时Actions 已经启动完成，每天上午七点（UTC+8）执行一次，每执行一次会在 `Actions` 选项卡下生成一个报告。
 
    如果需要对报送功能进行测试，可以点击 `run workflow` 按钮，立即进行一次运行。
 
