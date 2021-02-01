@@ -55,6 +55,6 @@ def login(username, password):
         print(r.text)
         return
 
-    print(f'{username} 登录成功')
+    print(f'登录成功')
 
     return sess
