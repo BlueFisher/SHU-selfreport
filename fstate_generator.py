@@ -12,7 +12,7 @@ def _generate_fstate_base64(fstate):
     return base64.b64encode(fstate_bytes).decode()
 
 
-def generate_fstate_day(BaoSRQ, ShiFSH, ShiFZX, ddlSheng, ddlShi, ddlXian, XiangXDZ):
+def generate_fstate_day(BaoSRQ, ShiFSH, ShiFZX, ddlSheng, ddlShi, ddlXian, XiangXDZ, ShiFZJ):
     with open('fstate_day.json', encoding='utf8') as f:
         fstate = json.loads(f.read())
 
@@ -26,6 +26,7 @@ def generate_fstate_day(BaoSRQ, ShiFSH, ShiFZX, ddlSheng, ddlShi, ddlXian, Xiang
     fstate['p1_ddlXian']['F_Items'] = [[ddlXian, ddlXian, 1, '', '']]
     fstate['p1_ddlXian']['SelectedValueArray'] = [ddlXian]
     fstate['p1_XiangXDZ']['Text'] = XiangXDZ
+    fstate['p1_ShiFZJ']['SelectedValue'] = ShiFZJ
 
     fstate_base64 = _generate_fstate_base64(fstate)
     t = len(fstate_base64) // 2
@@ -65,6 +66,7 @@ def get_last_report(sess, t):
     ddlShi = '上海市'
     ddlXian = '宝山区'
     XiangXDZ = get_random_address()
+    ShiFZJ = '是'
 
     t = t - dt.timedelta(days=1)
     r = sess.get(f'https://selfreport.shu.edu.cn/ViewDayReport.aspx?day={t.year}-{t.month}-{t.day}')
@@ -73,7 +75,7 @@ def get_last_report(sess, t):
     for i, h in enumerate(htmls):
         if 'ShiFSH' in h:
             ShiFSH = _html_to_json(htmls[i - 1])['SelectedValue']
-        if '"ShiFZX' in h:
+        if 'ShiFZX' in h:
             ShiFZX = _html_to_json(htmls[i - 1])['SelectedValue']
         if 'ddlSheng' in h:
             ddlSheng = _html_to_json(htmls[i - 1])['SelectedValueArray'][0]
@@ -83,8 +85,10 @@ def get_last_report(sess, t):
             ddlXian = _html_to_json(htmls[i - 1])['SelectedValueArray'][0]
         if 'XiangXDZ' in h:
             XiangXDZ = _html_to_json(htmls[i - 1])['Text']
+        if 'ShiFZJ' in h:
+            ShiFZJ = _html_to_json(htmls[i - 1])['SelectedValue']
 
-    return ShiFSH, ShiFZX, ddlSheng, ddlShi, ddlXian, XiangXDZ
+    return ShiFSH, ShiFZX, ddlSheng, ddlShi, ddlXian, XiangXDZ, ShiFZJ
 
 
 if __name__ == '__main__':
