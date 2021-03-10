@@ -2,7 +2,7 @@ name: Auto Report
 
 on:
   schedule:
-    - cron: "0 23 * * *"
+    - cron: '0,0 16,10 * * *'
   workflow_dispatch:
 
 jobs:
@@ -24,3 +24,15 @@ jobs:
         env:
           users: ${{ secrets.USERS }}
         run: "python -u main.py"
+      - name: 'Send mail'
+        uses: dawidd6/action-send-mail@master
+        with:
+          server_address: smtp.163.com
+          server_port: 465
+          username: ${{ secrets.MAIL_USERNAME }}
+          password: ${{ secrets.MAIL_PASSWORD }}
+          subject: 每日一报 (${{env.REPORT_DATE}})
+          body: file://mail.html
+          to: ${{ secrets.MAIL_BOX }}
+          from: GitHub Actions
+          content_type: text/html
