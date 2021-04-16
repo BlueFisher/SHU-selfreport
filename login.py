@@ -1,5 +1,6 @@
 import base64
 import re
+import rsa
 
 import requests
 from bs4 import BeautifulSoup
