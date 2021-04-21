@@ -4,7 +4,8 @@ import json
 import random
 import re
 from pathlib import Path
-
+import os
+import sys
 
 def _generate_fstate_base64(fstate):
     fstate_json = json.dumps(fstate, ensure_ascii=False)
@@ -13,7 +14,7 @@ def _generate_fstate_base64(fstate):
 
 
 def generate_fstate_day(BaoSRQ, ShiFSH, ShiFZX, ddlSheng, ddlShi, ddlXian, XiangXDZ, ShiFZJ):
-    with open('fstate_day.json', encoding='utf8') as f:
+    with open(os.path.abspath(os.path.dirname(sys.argv[0]))+'/fstate_day.json', encoding='utf8') as f:
         fstate = json.loads(f.read())
 
     fstate['p1_BaoSRQ']['Text'] = BaoSRQ
