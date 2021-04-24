@@ -1,6 +1,7 @@
 import base64
 import re
 import rsa
+import time
 
 import requests
 from bs4 import BeautifulSoup
@@ -49,6 +50,7 @@ def login(username, password):
 
         except Exception as e:
             print(e)
+            time.sleep(60)
             continue
         break
 
@@ -58,6 +60,7 @@ def login(username, password):
             r = sess.get(url)
         except Exception as e:
             print(e)
+            time.sleep(60)
             continue
         break
 
