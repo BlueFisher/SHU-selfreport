@@ -122,15 +122,13 @@ def report_day(sess, t):
             }, allow_redirects=False)
         except Exception as e:
             print(e)
-            time.sleep(60)
+            time.sleep(120)
             continue
         break
 
     if any(i in r.text for i in ['提交成功', '历史信息不能修改', '现在还没到晚报时间', '只能填报当天或补填以前的信息']):
-        print(f'{t} 每日一报提交成功')
         return True
     else:
-        print(f'{t} 每日一报提交失败')
         print(r.text)
         return False
 
@@ -146,7 +144,7 @@ if __name__ == "__main__":
                 'pwd': password
             }
 
-    for user in config:
+    for i, user in enumerate(config):
         if user in ['00000000', '11111111']:
             continue
 
@@ -154,15 +152,26 @@ if __name__ == "__main__":
         sess = login(user, config[user]['pwd'])
 
         if sess:
+            print('登录成功')
             now = get_time()
 
             if NEED_BEFORE:
                 t = START_DT
                 while t < now:
-                    report_day(sess, t)
+                    if report_day(sess, t):
+                        print(f'{t} 每日一报补报成功')
+                    else:
+                        print(f'{t} 每日一报补报失败')
 
                     t = t + dt.timedelta(days=1)
+            
+            now = get_time()
+            if report_day(sess, now):
+                print(f'{now} 每日一报提交成功')
+            else:
+                print(f'{now} 每日一报提交失败')
+        else:
+            print('登录失败')
 
-            report_day(sess, get_time())
-
-        time.sleep(60)
+        if i < len(config) - 1:
+            time.sleep(120)
