@@ -57,7 +57,7 @@ def login(username, password):
             continue
         break
     else:
-        print('login get Default failed')
+        print('登录超时')
         return
 
     url = f'https://selfreport.shu.edu.cn/DayReport.aspx'
@@ -70,7 +70,7 @@ def login(username, password):
             continue
         break
     else:
-        print('login get DayReport failed')
+        print('登录后验证超时')
         return
 
     soup = BeautifulSoup(r.text, 'html.parser')

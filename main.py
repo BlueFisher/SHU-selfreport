@@ -45,7 +45,7 @@ def report_day(sess, t):
             continue
         break
     else:
-        print('report_day get DayReport failed')
+        print('获取每日一报起始页超时')
         return False
 
     soup = BeautifulSoup(r.text, 'html.parser')
@@ -62,7 +62,7 @@ def report_day(sess, t):
     try:
         ShiFSH, ShiFZX, ddlSheng, ddlShi, ddlXian, XiangXDZ, ShiFZJ = get_last_report(sess, t)
     except Exception as e:
-        print('get_last_report failed')
+        print('获取前一天每日一报失败')
         print(e)
         return False
 
@@ -138,15 +138,19 @@ def report_day(sess, t):
             print(e)
             time.sleep(RETRY_TIMEOUT)
             continue
-        break
-    else:
-        print('report_day post DayReport failed')
-        return False
 
-    if any(i in r.text for i in ['提交成功', '历史信息不能修改', '现在还没到晚报时间', '只能填报当天或补填以前的信息']):
-        return True
+        if any(i in r.text for i in ['提交成功', '历史信息不能修改', '现在还没到晚报时间', '只能填报当天或补填以前的信息']):
+            return True
+        elif '数据库有点忙' in r.text:
+            print('数据库有点忙，重试')
+            time.sleep(RETRY_TIMEOUT)
+            continue
+        else:
+            print(r.text)
+            return False
+
     else:
-        print(r.text)
+        print('每日一报填报超时')
         return False
 
 
