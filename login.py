@@ -6,6 +6,9 @@ import time
 import requests
 from bs4 import BeautifulSoup
 
+RETRY = 5
+RETRY_TIMEOUT = 120
+
 
 def myMessages(sess):
     url = f'https://selfreport.shu.edu.cn/MyMessages.aspx'
@@ -34,7 +37,7 @@ def encryptPass(password):
 
 def login(username, password):
     sess = requests.Session()
-    while True:
+    for _ in range(RETRY):
         try:
             r = sess.get('https://selfreport.shu.edu.cn/Default.aspx')
             code = r.url.split('/')[-1]
@@ -50,19 +53,25 @@ def login(username, password):
 
         except Exception as e:
             print(e)
-            time.sleep(120)
+            time.sleep(RETRY_TIMEOUT)
             continue
         break
+    else:
+        print('登录超时')
+        return
 
-    url = f'https://selfreport.shu.edu.cn/XueSFX/HalfdayReport.aspx?day=2020-11-21&t=1'
-    while True:
+    url = f'https://selfreport.shu.edu.cn/DayReport.aspx'
+    for _ in range(RETRY_TIMEOUT):
         try:
             r = sess.get(url)
         except Exception as e:
             print(e)
-            time.sleep(120)
+            time.sleep(RETRY_TIMEOUT)
             continue
         break
+    else:
+        print('登录后验证超时')
+        return
 
     soup = BeautifulSoup(r.text, 'html.parser')
     view_state = soup.find('input', attrs={'name': '__VIEWSTATE'})

@@ -10,7 +10,9 @@ from fstate_generator import generate_fstate_day, generate_fstate_halfday, get_l
 from login import login
 
 NEED_BEFORE = False  # 如需补报则置为True，否则False
-START_DT = dt.datetime(2020, 10, 10)  # 需要补报的起始日期
+START_DT = dt.datetime(2021, 4, 20)  # 需要补报的起始日期
+RETRY = 5
+RETRY_TIMEOUT = 120
 
 
 # 获取东八区时间
@@ -34,7 +36,18 @@ def get_time():
 def report_day(sess, t):
     url = f'https://selfreport.shu.edu.cn/DayReport.aspx?day={t.year}-{t.month}-{t.day}'
 
-    r = sess.get(url)
+    for _ in range(RETRY):
+        try:
+            r = sess.get(url, allow_redirects=False)
+        except Exception as e:
+            print(e)
+            time.sleep(RETRY_TIMEOUT)
+            continue
+        break
+    else:
+        print('获取每日一报起始页超时')
+        return False
+
     soup = BeautifulSoup(r.text, 'html.parser')
     view_state = soup.find('input', attrs={'name': '__VIEWSTATE'})
 
@@ -49,6 +62,7 @@ def report_day(sess, t):
     try:
         ShiFSH, ShiFZX, ddlSheng, ddlShi, ddlXian, XiangXDZ, ShiFZJ = get_last_report(sess, t)
     except Exception as e:
+        print('获取前一天每日一报失败')
         print(e)
         return False
 
@@ -56,7 +70,7 @@ def report_day(sess, t):
     print(ddlSheng, ddlShi, ddlXian, f'###{XiangXDZ[-2:]}')
     print(f'是否为家庭地址：{ShiFZJ}')
 
-    while True:
+    for _ in range(RETRY):
         try:
             r = sess.post(url, data={
                 "__EVENTTARGET": "p1$ctl01$btnSubmit",
@@ -122,14 +136,21 @@ def report_day(sess, t):
             }, allow_redirects=False)
         except Exception as e:
             print(e)
-            time.sleep(120)
+            time.sleep(RETRY_TIMEOUT)
             continue
-        break
 
-    if any(i in r.text for i in ['提交成功', '历史信息不能修改', '现在还没到晚报时间', '只能填报当天或补填以前的信息']):
-        return True
+        if any(i in r.text for i in ['提交成功', '历史信息不能修改', '现在还没到晚报时间', '只能填报当天或补填以前的信息']):
+            return True
+        elif '数据库有点忙' in r.text:
+            print('数据库有点忙，重试')
+            time.sleep(RETRY_TIMEOUT)
+            continue
+        else:
+            print(r.text)
+            return False
+
     else:
-        print(r.text)
+        print('每日一报填报超时')
         return False
 
 
@@ -164,7 +185,7 @@ if __name__ == "__main__":
                         print(f'{t} 每日一报补报失败')
 
                     t = t + dt.timedelta(days=1)
-            
+
             now = get_time()
             if report_day(sess, now):
                 print(f'{now} 每日一报提交成功')
