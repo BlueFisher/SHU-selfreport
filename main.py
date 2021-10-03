@@ -192,13 +192,13 @@ if __name__ == "__main__":
             now = get_time()
             if report_day(sess, now):
                 print(f'{now} 每日一报提交成功')
-                succeedUsers.append(user)
+                succeedUsers.append(user[-4: ])
             else:
                 print(f'{now} 每日一报提交失败')
-                failedUsers.append(user)
+                failedUsers.append(user[-4: ])
         else:
             print('登录失败')
-            failedUsers.append(user)
+            failedUsers.append(user[-4: ])
 
         if i < len(config) - 1:
             time.sleep(120)
