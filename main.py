@@ -1,5 +1,6 @@
 import datetime as dt
 import os
+import sys
 import time
 from pathlib import Path
 
@@ -165,6 +166,8 @@ if __name__ == "__main__":
                 'pwd': password
             }
 
+    succeedUsers = []
+    failedUsers = []
     for i, user in enumerate(config):
         if user in ['00000000', '11111111']:
             continue
@@ -189,10 +192,19 @@ if __name__ == "__main__":
             now = get_time()
             if report_day(sess, now):
                 print(f'{now} 每日一报提交成功')
+                succeedUsers.append(user)
             else:
                 print(f'{now} 每日一报提交失败')
+                failedUsers.append(user)
         else:
             print('登录失败')
+            failedUsers.append(user)
 
         if i < len(config) - 1:
             time.sleep(120)
+    
+    if (len(failedUsers) != 0):
+        succeedUsernames = ", ".join(succeedUsers)
+        failedUsernames = ", ".join(failedUsers)
+        print( f'{succeedUsernames} 每日一报提交成功，{failedUsernames} 每日一报提交失败，查看日志获取详情')
+        sys.exit(1)
