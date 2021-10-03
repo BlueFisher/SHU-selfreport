@@ -166,13 +166,14 @@ if __name__ == "__main__":
                 'pwd': password
             }
 
-    succeedUsers = []
-    failedUsers = []
+    succeeded_users = []
+    failed_users = []
     for i, user in enumerate(config):
         if user in ['00000000', '11111111']:
             continue
 
-        print(f'====={user[-4:]}=====')
+        user_abbr = user[-4:]
+        print(f'====={user_abbr}=====')
         sess = login(user, config[user]['pwd'])
 
         if sess:
@@ -192,19 +193,19 @@ if __name__ == "__main__":
             now = get_time()
             if report_day(sess, now):
                 print(f'{now} 每日一报提交成功')
-                succeedUsers.append(user[-4: ])
+                succeeded_users.append(user_abbr)
             else:
                 print(f'{now} 每日一报提交失败')
-                failedUsers.append(user[-4: ])
+                failed_users.append(user_abbr)
         else:
             print('登录失败')
-            failedUsers.append(user[-4: ])
+            failed_users.append(user_abbr)
 
         if i < len(config) - 1:
             time.sleep(120)
-    
-    if (len(failedUsers) != 0):
-        succeedUsernames = ", ".join(succeedUsers)
-        failedUsernames = ", ".join(failedUsers)
-        print( f'{succeedUsernames} 每日一报提交成功，{failedUsernames} 每日一报提交失败，查看日志获取详情')
+
+    if len(failed_users) != 0:
+        succeeded_users = ", ".join(succeeded_users)
+        failed_users = ", ".join(failed_users)
+        print(f'[{succeeded_users}] 每日一报提交成功，[{failed_users}] 每日一报提交失败，查看日志获取详情')
         sys.exit(1)
