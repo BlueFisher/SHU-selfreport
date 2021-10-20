@@ -71,7 +71,7 @@ def report_day(sess, t):
     for _ in range(RETRY):
         try:
             r = sess.post(url, data={
-                "__EVENTTARGET": "p1$ctl01$btnSubmit",
+                "__EVENTTARGET": "p1$ctl02$btnSubmit",
                 "__EVENTARGUMENT": "",
                 "__VIEWSTATE": view_state['value'],
                 "__VIEWSTATEGENERATOR": "7AD7E509",
