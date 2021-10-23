@@ -4,8 +4,7 @@ import json
 import random
 import re
 from pathlib import Path
-import os
-import sys
+
 
 def _generate_fstate_base64(fstate):
     fstate_json = json.dumps(fstate, ensure_ascii=False)
@@ -13,8 +12,9 @@ def _generate_fstate_base64(fstate):
     return base64.b64encode(fstate_bytes).decode()
 
 
-def generate_fstate_day(BaoSRQ, ShiFSH, ShiFZX, ddlSheng, ddlShi, ddlXian, XiangXDZ, ShiFZJ):
-    with open(os.path.abspath(os.path.dirname(sys.argv[0]))+'/fstate_day.json', encoding='utf8') as f:
+def generate_fstate_day(BaoSRQ, ShiFSH, ShiFZX, ddlSheng, ddlShi, ddlXian, XiangXDZ, ShiFZJ,
+                        SuiSM, XingCM):
+    with open('fstate_day.json', encoding='utf8') as f:
         fstate = json.loads(f.read())
 
     fstate['p1_BaoSRQ']['Text'] = BaoSRQ
@@ -28,21 +28,12 @@ def generate_fstate_day(BaoSRQ, ShiFSH, ShiFZX, ddlSheng, ddlShi, ddlXian, Xiang
     fstate['p1_ddlXian']['SelectedValueArray'] = [ddlXian]
     fstate['p1_XiangXDZ']['Text'] = XiangXDZ
     fstate['p1_ShiFZJ']['SelectedValue'] = ShiFZJ
+    fstate['p1_pImages_HFimgSuiSM']['Text'] = SuiSM
+    fstate['p1_pImages_HFimgXingCM']['Text'] = XingCM
 
     fstate_base64 = _generate_fstate_base64(fstate)
     t = len(fstate_base64) // 2
     fstate_base64 = fstate_base64[:t] + 'F_STATE' + fstate_base64[t:]
-
-    return fstate_base64
-
-
-def generate_fstate_halfday(BaoSRQ):
-    with open(Path(__file__).resolve().parent.joinpath('fstate_halfday.json'), encoding='utf8') as f:
-        fstate = json.loads(f.read())
-
-    fstate['p1_BaoSRQ']['Text'] = BaoSRQ
-
-    fstate_base64 = _generate_fstate_base64(fstate)
 
     return fstate_base64
 
@@ -74,24 +65,47 @@ def get_last_report(sess, t):
     t = re.findall(r'^.*//\]', r.text, re.MULTILINE)[0]
     htmls = t.split(';var ')
     for i, h in enumerate(htmls):
-        if 'ShiFSH' in h:
-            ShiFSH = _html_to_json(htmls[i - 1])['SelectedValue']
-        if 'ShiFZX' in h:
-            ShiFZX = _html_to_json(htmls[i - 1])['SelectedValue']
-        if 'ddlSheng' in h:
-            ddlSheng = _html_to_json(htmls[i - 1])['SelectedValueArray'][0]
-        if 'ddlShi' in h:
-            ddlShi = _html_to_json(htmls[i - 1])['SelectedValueArray'][0]
-        if 'ddlXian' in h:
-            ddlXian = _html_to_json(htmls[i - 1])['SelectedValueArray'][0]
-        if 'XiangXDZ' in h:
-            XiangXDZ = _html_to_json(htmls[i - 1])['Text']
-        if 'ShiFZJ' in h:
-            ShiFZJ = _html_to_json(htmls[i - 1])['SelectedValue']
+        try:
+            if 'ShiFSH' in h:
+                ShiFSH = _html_to_json(htmls[i - 1])['SelectedValue']
+            if 'ShiFZX' in h:
+                ShiFZX = _html_to_json(htmls[i - 1])['SelectedValue']
+            if 'ddlSheng' in h:
+                ddlSheng = _html_to_json(htmls[i - 1])['SelectedValueArray'][0]
+            if 'ddlShi' in h:
+                ddlShi = _html_to_json(htmls[i - 1])['SelectedValueArray'][0]
+            if 'ddlXian' in h:
+                ddlXian = _html_to_json(htmls[i - 1])['SelectedValueArray'][0]
+            if 'XiangXDZ' in h:
+                XiangXDZ = _html_to_json(htmls[i - 1])['Text']
+            if 'ShiFZJ' in h:
+                ShiFZJ = _html_to_json(htmls[i - 1])['SelectedValue']
+        except:
+            print('获取前一天日报有错误')
+            print(htmls[i - 1])
 
     return ShiFSH, ShiFZX, ddlSheng, ddlShi, ddlXian, XiangXDZ, ShiFZJ
 
 
+def get_img_value(sess):
+    SuiSM = 'cYskH72v3ZA='
+    XingCM = 'cYskH72v3ZA='
+
+    r = sess.get(f'https://selfreport.shu.edu.cn/DayReport.aspx')
+    t = re.findall(r'^.*//\]', r.text, re.MULTILINE)[0]
+    htmls = t.split(';var ')
+    for i, h in enumerate(htmls):
+        try:
+            if 'p1$pImages$HFimgSuiSM' in h:
+                SuiSM = _html_to_json(htmls[i - 1])['Text']
+            if 'p1$pImages$HFimgXingCM' in h:
+                XingCM = _html_to_json(htmls[i - 1])['Text']
+        except:
+            print('获取随身码行程码有错误')
+            print(htmls[i - 1])
+
+    return SuiSM, XingCM
+
+
 if __name__ == '__main__':
     print(generate_fstate_day())
-    print(generate_fstate_halfday())

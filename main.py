@@ -1,12 +1,13 @@
 import datetime as dt
 import os
+import sys
 import time
 from pathlib import Path
 
 import yaml
 from bs4 import BeautifulSoup
 
-from fstate_generator import generate_fstate_day, generate_fstate_halfday, get_last_report
+from fstate_generator import generate_fstate_day, get_last_report, get_img_value
 from login import login
 
 NEED_BEFORE = False  # 如需补报则置为True，否则False
@@ -59,21 +60,18 @@ def report_day(sess, t):
         return False
 
     BaoSRQ = t.strftime('%Y-%m-%d')
-    try:
-        ShiFSH, ShiFZX, ddlSheng, ddlShi, ddlXian, XiangXDZ, ShiFZJ = get_last_report(sess, t)
-    except Exception as e:
-        print('获取前一天每日一报失败')
-        print(e)
-        return False
+    ShiFSH, ShiFZX, ddlSheng, ddlShi, ddlXian, XiangXDZ, ShiFZJ = get_last_report(sess, t)
+    SuiSM, XingCM = get_img_value(sess)
 
     print(f'是否在上海：{ShiFSH}', f'是否在校：{ShiFZX}')
     print(ddlSheng, ddlShi, ddlXian, f'###{XiangXDZ[-2:]}')
     print(f'是否为家庭地址：{ShiFZJ}')
+    print(f'随身码：{SuiSM}，行程码：{XingCM}')
 
     for _ in range(RETRY):
         try:
             r = sess.post(url, data={
-                "__EVENTTARGET": "p1$ctl01$btnSubmit",
+                "__EVENTTARGET": "p1$ctl02$btnSubmit",
                 "__EVENTARGUMENT": "",
                 "__VIEWSTATE": view_state['value'],
                 "__VIEWSTATEGENERATOR": "7AD7E509",
@@ -128,8 +126,11 @@ def report_day(sess, t):
                 "p1_ContentPanel1_Collapsed": "true",
                 "p1_GeLSM_Collapsed": "false",
                 "p1_Collapsed": "false",
+                "p1$pImages$HFimgSuiSM": SuiSM,
+                "p1$pImages$HFimgXingCM": XingCM,
                 "F_STATE": generate_fstate_day(BaoSRQ, ShiFSH, ShiFZX,
-                                               ddlSheng, ddlShi, ddlXian, XiangXDZ, ShiFZJ)
+                                               ddlSheng, ddlShi, ddlXian, XiangXDZ, ShiFZJ,
+                                               SuiSM, XingCM)
             }, headers={
                 'X-Requested-With': 'XMLHttpRequest',
                 'X-FineUI-Ajax': 'true'
@@ -165,11 +166,14 @@ if __name__ == "__main__":
                 'pwd': password
             }
 
+    succeeded_users = []
+    failed_users = []
     for i, user in enumerate(config):
         if user in ['00000000', '11111111']:
             continue
 
-        print(f'====={user[-4:]}=====')
+        user_abbr = user[-4:]
+        print(f'====={user_abbr}=====')
         sess = login(user, config[user]['pwd'])
 
         if sess:
@@ -189,10 +193,19 @@ if __name__ == "__main__":
             now = get_time()
             if report_day(sess, now):
                 print(f'{now} 每日一报提交成功')
+                succeeded_users.append(user_abbr)
             else:
                 print(f'{now} 每日一报提交失败')
+                failed_users.append(user_abbr)
         else:
             print('登录失败')
+            failed_users.append(user_abbr)
 
         if i < len(config) - 1:
             time.sleep(120)
+
+    if len(failed_users) != 0:
+        succeeded_users = ", ".join(succeeded_users)
+        failed_users = ", ".join(failed_users)
+        print(f'[{succeeded_users}] 每日一报提交成功，[{failed_users}] 每日一报提交失败，查看日志获取详情')
+        sys.exit(1)
