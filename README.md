@@ -94,10 +94,13 @@ crontab -e
 
 #### 你第二次Fork，要更新原先内容
 
-![](images/update_fork.gif)
+1. 点击 `Fetch upstream`
 
-或者最简单的方法， 删除你fork的项目，重新fork
+![](images/fetch_upstream_01.png)
 
+2. 点击 `Fetch and merge`
+
+![](images/fetch_upstream_02.png)
 
 
 ## 依赖
