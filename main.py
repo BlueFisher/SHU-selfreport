@@ -10,8 +10,8 @@ from bs4 import BeautifulSoup
 from fstate_generator import generate_fstate_day, get_last_report, get_img_value
 from login import login
 
-NEED_BEFORE = False  # 如需补报则置为True，否则False
-START_DT = dt.datetime(2021, 4, 20)  # 需要补报的起始日期
+NEED_BEFORE = True  # 如需补报则置为True，否则False
+START_DT = dt.datetime(2021, 10, 19)  # 需要补报的起始日期
 RETRY = 5
 RETRY_TIMEOUT = 120
 
