@@ -2133,10 +2133,26 @@
                 1
             ]
         ],
-        "SelectedValue": null
+        "SelectedValue": "否"
+    },
+    "p1_pImages_HFimgSuiSM": {
+        "Text": "cYskH72v3ZA="
+    },
+    "p1_pImages_imgSuiSM": {
+        "ImageUrl": "/ShowImage.ashx?squrl=0"
+    },
+    "p1_pImages_HFimgXingCM": {
+        "Text": "cYskH72v3ZA="
+    },
+    "p1_pImages_imgXingCM": {
+        "ImageUrl": "/ShowImage.ashx?squrl=0"
+    },
+    "p1_pImages": {
+        "Hidden": false,
+        "IFrameAttributes": {}
     },
     "p1_ContentPanel1_ZhongGFXDQ": {
-        "Text": "<span style='color:red;'>云南省瑞丽市姐告国门社区，团结村委会金坎、弄喊片区（瑞丽大道以南），仙客巷和光明巷居民小组，鑫盛时代佳园小区，瑞京路红砖厂，星河蓝湾小区，双卯村民小组，下弄安村民小组，珠宝街老食品厂家属区</span>"
+        "Text": "<span style='color:red;'></span>"
     },
     "p1_ContentPanel1": {
         "IFrameAttributes": {}
