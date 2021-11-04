@@ -13,7 +13,7 @@ def _generate_fstate_base64(fstate):
 
 
 def generate_fstate_day(BaoSRQ, ShiFSH, ShiFZX, ddlSheng, ddlShi, ddlXian, XiangXDZ, ShiFZJ,
-                        SuiSM, XingCM):
+                        XingCM):
     with open('fstate_day.json', encoding='utf8') as f:
         fstate = json.loads(f.read())
 
@@ -28,7 +28,6 @@ def generate_fstate_day(BaoSRQ, ShiFSH, ShiFZX, ddlSheng, ddlShi, ddlXian, Xiang
     fstate['p1_ddlXian']['SelectedValueArray'] = [ddlXian]
     fstate['p1_XiangXDZ']['Text'] = XiangXDZ
     fstate['p1_ShiFZJ']['SelectedValue'] = ShiFZJ
-    fstate['p1_pImages_HFimgSuiSM']['Text'] = SuiSM
     fstate['p1_pImages_HFimgXingCM']['Text'] = XingCM
 
     fstate_base64 = _generate_fstate_base64(fstate)
@@ -42,22 +41,14 @@ def _html_to_json(html):
     return json.loads(html[html.find('=') + 1:])
 
 
-# 随机生成地址
-def get_random_address():
-    address = [chr(random.randint(0x4e00, 0x9fbf)) for _ in range(3)]
-    address = ''.join(address) + '路'
-    address += str(random.randint(1, 999)) + '号'
-    address += str(random.randint(1, 20)) + '0' + str(random.randint(1, 9)) + '室'
-    return address
-
-
 def get_last_report(sess, t):
-    ShiFSH = '是'
-    ShiFZX = '否'
+    print('#正在获取前一天的填报信息...')
+    ShiFSH = '在上海（校内）'
+    ShiFZX = '是'
     ddlSheng = '上海'
     ddlShi = '上海市'
     ddlXian = '宝山区'
-    XiangXDZ = get_random_address()
+    XiangXDZ = '上海大学1'
     ShiFZJ = '是'
 
     t = t - dt.timedelta(days=1)
@@ -67,28 +58,42 @@ def get_last_report(sess, t):
     for i, h in enumerate(htmls):
         try:
             if 'ShiFSH' in h:
+                print('-ShiFSH-')
                 ShiFSH = _html_to_json(htmls[i - 1])['SelectedValue']
+                print(ShiFSH)
             if 'ShiFZX' in h:
+                print('-ShiFZX-')
                 ShiFZX = _html_to_json(htmls[i - 1])['SelectedValue']
+                print(ShiFZX)
             if 'ddlSheng' in h:
+                print('-ddlSheng-')
                 ddlSheng = _html_to_json(htmls[i - 1])['SelectedValueArray'][0]
+                print(ddlSheng)
             if 'ddlShi' in h:
+                print('-ddlShi-')
                 ddlShi = _html_to_json(htmls[i - 1])['SelectedValueArray'][0]
+                print(ddlShi)
             if 'ddlXian' in h:
+                print('-ddlXian-')
                 ddlXian = _html_to_json(htmls[i - 1])['SelectedValueArray'][0]
+                print(ddlXian)
             if 'XiangXDZ' in h:
+                print('-XiangXDZ-')
                 XiangXDZ = _html_to_json(htmls[i - 1])['Text']
+                print(XiangXDZ)
             if 'ShiFZJ' in h:
+                print('-ShiFZJ-')
                 ShiFZJ = _html_to_json(htmls[i - 1])['SelectedValue']
+                print(ShiFZJ)
         except:
-            print('获取前一天日报有错误')
-            print(htmls[i - 1])
+            print('获取前一天日报有错误', htmls[i - 1])
 
     return ShiFSH, ShiFZX, ddlSheng, ddlShi, ddlXian, XiangXDZ, ShiFZJ
 
 
 def get_img_value(sess):
-    SuiSM = 'cYskH72v3ZA='
+    print('#正在获取行程码信息...')
+
     XingCM = 'cYskH72v3ZA='
 
     r = sess.get(f'https://selfreport.shu.edu.cn/DayReport.aspx')
@@ -96,15 +101,12 @@ def get_img_value(sess):
     htmls = t.split(';var ')
     for i, h in enumerate(htmls):
         try:
-            if 'p1$pImages$HFimgSuiSM' in h:
-                SuiSM = _html_to_json(htmls[i - 1])['Text']
             if 'p1$pImages$HFimgXingCM' in h:
                 XingCM = _html_to_json(htmls[i - 1])['Text']
         except:
-            print('获取随身码行程码有错误')
-            print(htmls[i - 1])
+            print('获取行程码有错误，使用默认行程码', htmls[i - 1])
 
-    return SuiSM, XingCM
+    return XingCM
 
 
 if __name__ == '__main__':
