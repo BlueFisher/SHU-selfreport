@@ -78,6 +78,7 @@ def report_day(sess, t):
                 "__VIEWSTATE": view_state['value'],
                 "__VIEWSTATEGENERATOR": "7AD7E509",
                 "p1$ChengNuo": "p1_ChengNuo",
+                "p1$pnlDangSZS$DangSZS": "A",
                 "p1$BaoSRQ": BaoSRQ,
                 "p1$DangQSTZK": "良好",
                 "p1$TiWen": "",
