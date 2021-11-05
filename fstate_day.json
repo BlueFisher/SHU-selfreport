@@ -2,8 +2,45 @@
     "p1_ChengNuo": {
         "Checked": true
     },
+    "p1_pnlDangSZS_DangSZS": {
+        "Label": "",
+        "F_Items": [
+            [
+                "A",
+                "A",
+                1
+            ],
+            [
+                "B",
+                "B",
+                1
+            ],
+            [
+                "C",
+                "C",
+                1
+            ],
+            [
+                "D",
+                "D",
+                1
+            ]
+        ],
+        "SelectedValueArray": [
+            "A"
+        ]
+    },
+    "p1_pnlDangSZS_ckda": {
+        "Hidden": false,
+        "OnClientClick": ""
+    },
+    "p1_pnlDangSZS": {
+        "Hidden": false,
+        "Title": "",
+        "IFrameAttributes": {}
+    },
     "p1_BaoSRQ": {
-        "Text": "2021-04-14"
+        "Text": "2021-11-05"
     },
     "p1_DangQSTZK": {
         "F_Items": [
@@ -40,6 +77,9 @@
             ]
         ],
         "SelectedValueArray": []
+    },
+    "p1_pImages": {
+        "IFrameAttributes": {}
     },
     "p1_QiuZZT": {
         "F_Items": [],
@@ -1672,17 +1712,22 @@
         "Hidden": false,
         "F_Items": [
             [
-                "是",
-                "在上海",
+                "在上海（校内）",
+                "在上海（校内）",
                 1
             ],
             [
-                "否",
+                "在上海（不在校内）",
+                "在上海（不在校内）",
+                1
+            ],
+            [
+                "不在上海",
                 "不在上海",
                 1
             ]
         ],
-        "SelectedValue": "是"
+        "SelectedValue": "在上海（校内）"
     },
     "p1_ShiFZX": {
         "F_Items": [
@@ -1996,13 +2041,6 @@
                 ""
             ],
             [
-                "卢湾区",
-                "卢湾区",
-                1,
-                "",
-                ""
-            ],
-            [
                 "徐汇区",
                 "徐汇区",
                 1,
@@ -2045,15 +2083,15 @@
                 ""
             ],
             [
-                "宝山区",
-                "宝山区",
+                "闵行区",
+                "闵行区",
                 1,
                 "",
                 ""
             ],
             [
-                "闵行区",
-                "闵行区",
+                "宝山区",
+                "宝山区",
                 1,
                 "",
                 ""
@@ -2066,8 +2104,8 @@
                 ""
             ],
             [
-                "松江区",
-                "松江区",
+                "浦东新区",
+                "浦东新区",
                 1,
                 "",
                 ""
@@ -2075,6 +2113,13 @@
             [
                 "金山区",
                 "金山区",
+                1,
+                "",
+                ""
+            ],
+            [
+                "松江区",
+                "松江区",
                 1,
                 "",
                 ""
@@ -2089,13 +2134,6 @@
             [
                 "奉贤区",
                 "奉贤区",
-                1,
-                "",
-                ""
-            ],
-            [
-                "浦东新区",
-                "浦东新区",
                 1,
                 "",
                 ""
@@ -2114,9 +2152,9 @@
         "Hidden": false
     },
     "p1_XiangXDZ": {
-        "Text": "上海大学",
         "Hidden": false,
-        "Label": "校内宿舍地址（校区、幢楼 、房间）"
+        "Label": "校内宿舍地址（校区、幢楼 、房间）",
+        "Text": "上海大学"
     },
     "p1_ShiFZJ": {
         "Required": true,
@@ -2135,30 +2173,17 @@
         ],
         "SelectedValue": "否"
     },
-    "p1_pImages_HFimgSuiSM": {
-        "Text": "cYskH72v3ZA="
-    },
-    "p1_pImages_imgSuiSM": {
-        "ImageUrl": "/ShowImage.ashx?squrl=0"
-    },
     "p1_pImages_HFimgXingCM": {
         "Text": "cYskH72v3ZA="
     },
     "p1_pImages_imgXingCM": {
         "ImageUrl": "/ShowImage.ashx?squrl=0"
     },
-    "p1_pImages": {
-        "Hidden": false,
-        "IFrameAttributes": {}
-    },
-    "p1_ContentPanel1_ZhongGFXDQ": {
-        "Text": "<span style='color:red;'></span>"
-    },
     "p1_ContentPanel1": {
         "IFrameAttributes": {}
     },
     "p1_FengXDQDL": {
-        "Label": "03月31日至04月14日是否在<span style='color:red;'>中高风险地区</span>逗留",
+        "Label": "10月22日至11月05日是否在<span style='color:red;'>中高风险地区</span>逗留",
         "SelectedValue": "否",
         "F_Items": [
             [
@@ -2175,7 +2200,7 @@
     },
     "p1_TongZWDLH": {
         "Required": true,
-        "Label": "上海同住人员是否有03月31日至04月14日来自<span style='color:red;'>中高风险地区</span>的人",
+        "Label": "上海同住人员是否有10月22日至11月05日来自<span style='color:red;'>中高风险地区</span>的人",
         "SelectedValue": "否",
         "F_Items": [
             [
@@ -2191,7 +2216,7 @@
         ]
     },
     "p1_CengFWH": {
-        "Label": "03月31日至04月14日是否在<span style='color:red;'>中高风险地区</span>逗留过",
+        "Label": "10月22日至11月05日是否在<span style='color:red;'>中高风险地区</span>逗留过",
         "F_Items": [
             [
                 "是",
@@ -2213,7 +2238,7 @@
         "Hidden": true
     },
     "p1_JieChu": {
-        "Label": "03月31日至04月14日是否与来自<span style='color:red;'>中高风险地区</span>发热人员密切接触",
+        "Label": "10月22日至11月05日是否与来自<span style='color:red;'>中高风险地区</span>发热人员密切接触",
         "SelectedValue": "否",
         "F_Items": [
             [
@@ -2235,7 +2260,7 @@
         "Hidden": true
     },
     "p1_TuJWH": {
-        "Label": "03月31日至04月14日是否乘坐公共交通途径<span style='color:red;'>中高风险地区</span>",
+        "Label": "10月22日至11月05日是否乘坐公共交通途径<span style='color:red;'>中高风险地区</span>",
         "SelectedValue": "否",
         "F_Items": [
             [
@@ -2332,7 +2357,7 @@
         "Text": "没有"
     },
     "p1_JiaRen": {
-        "Label": "03月31日至04月14日家人是否有发热等症状"
+        "Label": "10月22日至11月05日家人是否有发热等症状"
     },
     "p1_JiaRen_BeiZhu": {
         "Hidden": true
@@ -2374,7 +2399,7 @@
             ]
         ]
     },
-    "p1_ctl01_btnReturn": {
+    "p1_ctl02_btnReturn": {
         "OnClientClick": "document.location.href='/Default.aspx';return;"
     },
     "p1": {

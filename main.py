@@ -61,12 +61,14 @@ def report_day(sess, t):
 
     BaoSRQ = t.strftime('%Y-%m-%d')
     ShiFSH, ShiFZX, ddlSheng, ddlShi, ddlXian, XiangXDZ, ShiFZJ = get_last_report(sess, t)
-    SuiSM, XingCM = get_img_value(sess)
+    XingCM = get_img_value(sess)
 
-    print(f'是否在上海：{ShiFSH}', f'是否在校：{ShiFZX}')
+    print('#信息获取完成#')
+    print(f'是否在上海：{ShiFSH}')
+    print(f'是否在校：{ShiFZX}')
     print(ddlSheng, ddlShi, ddlXian, f'###{XiangXDZ[-2:]}')
     print(f'是否为家庭地址：{ShiFZJ}')
-    print(f'随身码：{SuiSM}，行程码：{XingCM}')
+    print(f'行程码：{XingCM}')
 
     for _ in range(RETRY):
         try:
@@ -76,9 +78,11 @@ def report_day(sess, t):
                 "__VIEWSTATE": view_state['value'],
                 "__VIEWSTATEGENERATOR": "7AD7E509",
                 "p1$ChengNuo": "p1_ChengNuo",
+                "p1$pnlDangSZS$DangSZS": "A",
                 "p1$BaoSRQ": BaoSRQ,
                 "p1$DangQSTZK": "良好",
                 "p1$TiWen": "",
+                "p1$pImages$HFimgXingCM": XingCM,
                 "p1$JiuYe_ShouJHM": "",
                 "p1$JiuYe_Email": "",
                 "p1$JiuYe_Wechat": "",
@@ -122,15 +126,14 @@ def report_day(sess, t):
                 "p1$SuiSM": "绿色",
                 "p1$LvMa14Days": "是",
                 "p1$Address2": "",
-                "F_TARGET": "p1_ctl00_btnSubmit",
+                "p1_pnlDangSZS_Collapsed": "false",
+                "p1_pImages_Collapsed": "false",
                 "p1_ContentPanel1_Collapsed": "true",
                 "p1_GeLSM_Collapsed": "false",
                 "p1_Collapsed": "false",
-                "p1$pImages$HFimgSuiSM": SuiSM,
-                "p1$pImages$HFimgXingCM": XingCM,
                 "F_STATE": generate_fstate_day(BaoSRQ, ShiFSH, ShiFZX,
                                                ddlSheng, ddlShi, ddlXian, XiangXDZ, ShiFZJ,
-                                               SuiSM, XingCM)
+                                               XingCM)
             }, headers={
                 'X-Requested-With': 'XMLHttpRequest',
                 'X-FineUI-Ajax': 'true'
