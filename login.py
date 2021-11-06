@@ -1,8 +1,13 @@
 import base64
 import re
+import rsa
+import time
 
 import requests
 from bs4 import BeautifulSoup
+
+RETRY = 5
+RETRY_TIMEOUT = 120
 
 
 def myMessages(sess):
@@ -17,9 +22,22 @@ def myMessages(sess):
     return
 
 
+# 2021.04.17 更新密码加密
+def encryptPass(password):
+    key_str = '''-----BEGIN PUBLIC KEY-----
+    MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQDl/aCgRl9f/4ON9MewoVnV58OL
+    OU2ALBi2FKc5yIsfSpivKxe7A6FitJjHva3WpM7gvVOinMehp6if2UNIkbaN+plW
+    f5IwqEVxsNZpeixc4GsbY9dXEk3WtRjwGSyDLySzEESH/kpJVoxO7ijRYqU+2oSR
+    wTBNePOk1H+LRQokgQIDAQAB
+    -----END PUBLIC KEY-----'''
+    pub_key = rsa.PublicKey.load_pkcs1_openssl_pem(key_str.encode('utf-8'))
+    crypto = base64.b64encode(rsa.encrypt(password.encode('utf-8'), pub_key)).decode()
+    return crypto
+
+
 def login(username, password):
     sess = requests.Session()
-    while True:
+    for _ in range(RETRY):
         try:
             r = sess.get('https://selfreport.shu.edu.cn/Default.aspx')
             code = r.url.split('/')[-1]
@@ -27,34 +45,39 @@ def login(username, password):
             state = url_param['state']
             sess.post(r.url, data={
                 'username': username,
-                'password': password
-            })
+                'password': encryptPass(password)
+            }, allow_redirects=False)
             messageBox = sess.get(f'https://newsso.shu.edu.cn/oauth/authorize?response_type=code&client_id=WUHWfrntnWYHZfzQ5QvXUCVy&redirect_uri=https%3a%2f%2fselfreport.shu.edu.cn%2fLoginSSO.aspx%3fReturnUrl%3d%252fDefault.aspx&scope=1&state={state}')
             if 'tz();' in messageBox.text:  # 调用tz()函数在首层提醒未读
                 myMessages(sess)
 
         except Exception as e:
             print(e)
+            time.sleep(RETRY_TIMEOUT)
             continue
         break
+    else:
+        print('登录超时')
+        return
 
-    url = f'https://selfreport.shu.edu.cn/XueSFX/HalfdayReport.aspx?day=2020-11-21&t=1'
-    while True:
+    url = f'https://selfreport.shu.edu.cn/DayReport.aspx'
+    for _ in range(RETRY_TIMEOUT):
         try:
             r = sess.get(url)
         except Exception as e:
             print(e)
+            time.sleep(RETRY_TIMEOUT)
             continue
         break
+    else:
+        print('登录后验证超时')
+        return
 
     soup = BeautifulSoup(r.text, 'html.parser')
     view_state = soup.find('input', attrs={'name': '__VIEWSTATE'})
 
     if view_state is None or 'invalid_grant' in r.text:
-        print(f'{username} 登录失败')
         print(r.text)
         return
-
-    print(f'登录成功')
 
     return sess

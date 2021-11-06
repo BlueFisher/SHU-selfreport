@@ -1,14 +1,24 @@
 # 上海大学健康之路每日一报/每日两报自动打卡
 
+**适配2021-11-05版，DangSZS**
+
+**适配2021-11-04版，修复了ShiFSH字段 [issue 51](https://github.com/BlueFisher/SHU-selfreport/issues/51)，去除随申码，丰富日志记录，若出现错误，可以当天真实提交一次，等第二天再观察**
+
+**适配2021-10-08版，获取当天的随申码、行程码。请真实地提交一次随申码、行程码，后续会自动采用之前上传的随申码、行程码**
+
+**适配2021-06-28版，更新github action的自动打卡时间**
+
+**适配2021-04-24版，暂不支持党史知识天天学**
+
 程序为python脚本文件，修改配置文件相关信息，设置后台运行脚本，脚本会根据配置文件信息自动进行每日一报/每日两报。
 
 支持github actions服务器。
 
 支持一键补报功能。
 
-支持每日一报/每日两报。目前暂时在早上7点自动填报一次。
+支持每日一报/每日两报。目前在早9晚9各自动填报一次。
 
-为了避免过多的配置，感谢[@Lanszhang131](https://github.com/Lanszhang131/DailyReport_SHU)的思路，**利用前一天的报送信息进行填报，所以如果你真实地提交过一次，那每天会重复填报。由于默认是早7填报，所以如果你想用真实信息的话第一次在早上7点填报后修改下信息。**
+为了避免过多的配置，感谢[@Lanszhang131](https://github.com/Lanszhang131/DailyReport_SHU)的思路，**利用前一天的报送信息进行填报，所以如果你真实地提交过一次，那每天会重复填报。由于默认是早9晚9填报，所以如果你想用真实信息的话第一次在晚上9点填报后修改下信息。**
 
 ## 免责申明
 
@@ -40,15 +50,15 @@ crontab -e
 加入以下命令：
 
 ```bash
-# 程序每天8点与20点执行一次，并将结果输出至shu_report.log
+# 程序每天4点执行一次，并将结果输出至shu_report.log
 # 注意python的路径，main.py与输出日志shu_report.log的绝对路径
-0 7 * * * python -u /xxx/main.py 2>&1 >> /xxx/shu_report.log
+0 4 * * * python -u /xxx/main.py 2>&1 >> /xxx/shu_report.log
 ```
 
 如果你服务器是UTC时区，则为
 
 ```bash
-0 23 * * * python -u /xxx/main.py 2>&1 >> /xxx/shu_report.log
+0 20 * * * python -u /xxx/main.py 2>&1 >> /xxx/shu_report.log
 ```
 
 如果你不确定你服务器的时区，也可以每小时运行一次：
@@ -77,7 +87,7 @@ crontab -e
 
 ![](images/enable_actions.png)
 
-5. 此时Actions 已经启动完成，每天上午七点（UTC+8）执行一次，每执行一次会在 `Actions` 选项卡下生成一个报告。
+5. 此时Actions 已经启动完成，每天上午八点（UTC+8）和晚上八点各执行一次，每执行一次会在 `Actions` 选项卡下生成一个报告。
 
    如果需要对报送功能进行测试，可以点击 `run workflow` 按钮，立即进行一次运行。
 
@@ -88,10 +98,13 @@ crontab -e
 
 #### 你第二次Fork，要更新原先内容
 
-![](images/update_fork.gif)
+1. 点击 `Fetch upstream`
 
-或者最简单的方法， 删除你fork的项目，重新fork
+![](images/fetch_upstream_01.png)
 
+2. 点击 `Fetch and merge`
+
+![](images/fetch_upstream_02.png)
 
 
 ## 依赖
