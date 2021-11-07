@@ -172,6 +172,7 @@ def view_messages(sess):
                 if '未读' in item[1]:
                     sess.get(f'https://selfreport.shu.edu.cn{item[4]}', allow_redirects=False)
                     print('已读', item[4])
+                    time.sleep(30)
             break
 
 
