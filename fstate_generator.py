@@ -59,7 +59,7 @@ def get_last_report(sess, t):
         try:
             if 'ShiFSH' in h:
                 print('-ShiFSH-')
-                ShiFSH = _html_to_json(htmls[i - 1])['SelectedValue']
+                ShiFSH = _html_to_json(htmls[i - 1])['Text']
                 print(ShiFSH)
             if 'ShiFZX' in h:
                 print('-ShiFZX-')
