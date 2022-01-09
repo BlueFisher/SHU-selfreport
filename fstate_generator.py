@@ -80,7 +80,7 @@ def get_last_report(sess, t):
             if 'XiangXDZ' in h:
                 print('-XiangXDZ-')
                 XiangXDZ = _html_to_json(htmls[i - 1])['Text']
-                print(XiangXDZ)
+                print(f'###{XiangXDZ[-2:]}')
             if 'ShiFZJ' in h:
                 print('-ShiFZJ-')
                 ShiFZJ = _html_to_json(htmls[i - 1])['SelectedValue']
