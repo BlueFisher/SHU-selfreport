@@ -64,13 +64,14 @@ def report_day(sess, t):
 
     BaoSRQ = t.strftime('%Y-%m-%d')
     ShiFSH, ShiFZX, ddlSheng, ddlShi, ddlXian, XiangXDZ, ShiFZJ = get_last_report(sess, t)
-    XingCM = get_img_value(sess)
+    SuiSM, XingCM = get_img_value(sess)
 
     print('#信息获取完成#')
     print(f'是否在上海：{ShiFSH}')
     print(f'是否在校：{ShiFZX}')
     print(ddlSheng, ddlShi, ddlXian, f'###{XiangXDZ[-2:]}')
     print(f'是否为家庭地址：{ShiFZJ}')
+    print(f'随申码：{SuiSM}')
     print(f'行程码：{XingCM}')
 
     for _ in range(RETRY):
@@ -85,6 +86,7 @@ def report_day(sess, t):
                 "p1$BaoSRQ": BaoSRQ,
                 "p1$DangQSTZK": "良好",
                 "p1$TiWen": "",
+                "p1$pImages$HFimgSuiSM": SuiSM,
                 "p1$pImages$HFimgXingCM": XingCM,
                 "p1$JiuYe_ShouJHM": "",
                 "p1$JiuYe_Email": "",
@@ -136,7 +138,7 @@ def report_day(sess, t):
                 "p1_Collapsed": "false",
                 "F_STATE": generate_fstate_day(BaoSRQ, ShiFSH, ShiFZX,
                                                ddlSheng, ddlShi, ddlXian, XiangXDZ, ShiFZJ,
-                                               XingCM)
+                                               SuiSM, XingCM)
             }, headers={
                 'X-Requested-With': 'XMLHttpRequest',
                 'X-FineUI-Ajax': 'true'
@@ -175,6 +177,10 @@ def view_messages(sess):
             break
 
 
+def notice(sess):
+    sess.post('https://selfreport.shu.edu.cn/DayReportNotice.aspx')
+
+
 if __name__ == "__main__":
     with open(Path(__file__).resolve().parent.joinpath('config.yaml'), encoding='utf8') as f:
         config = yaml.load(f, Loader=yaml.FullLoader)
@@ -198,6 +204,7 @@ if __name__ == "__main__":
 
         if sess:
             print('登录成功')
+            # notice(sess)
             view_messages(sess)
 
             now = get_time()
