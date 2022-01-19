@@ -9,6 +9,10 @@ from pathlib import Path
 import yaml
 from bs4 import BeautifulSoup
 
+from selenium import webdriver
+from selenium.webdriver.chrome.service import Service
+from selenium.webdriver.common.by import By
+
 from fstate_generator import (generate_fstate_day, get_img_value,
                               get_last_report)
 from login import login
@@ -200,32 +204,19 @@ if __name__ == "__main__":
 
         user_abbr = user[-4:]
         print(f'====={user_abbr}=====')
-        sess = login(user, config[user]['pwd'])
 
-        if sess:
+        chrome_options = webdriver.ChromeOptions()
+
+        chrome_options.add_argument('--headless')
+        chrome_options.add_argument('--disable-gpu')
+
+        s = Service('C:/App/chromedriver.exe')
+        browser = webdriver.Chrome(options=chrome_options, service=s)
+
+        login_result = login(browser, user, config[user]['pwd'])
+
+        if login_result:
             print('登录成功')
-            # notice(sess)
-            view_messages(sess)
-
-            now = get_time()
-
-            if NEED_BEFORE:
-                t = START_DT
-                while t < now:
-                    if report_day(sess, t):
-                        print(f'{t} 每日一报补报成功')
-                    else:
-                        print(f'{t} 每日一报补报失败')
-
-                    t = t + dt.timedelta(days=1)
-
-            now = get_time()
-            if report_day(sess, now):
-                print(f'{now} 每日一报提交成功')
-                succeeded_users.append(user_abbr)
-            else:
-                print(f'{now} 每日一报提交失败')
-                failed_users.append(user_abbr)
         else:
             print('登录失败')
             failed_users.append(user_abbr)
