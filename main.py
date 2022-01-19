@@ -4,23 +4,17 @@ import os
 import re
 import sys
 import time
+import traceback
 from pathlib import Path
 
+import requests
 import yaml
 from bs4 import BeautifulSoup
-
 from selenium import webdriver
 from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.common.by import By
 
-from fstate_generator import (generate_fstate_day, get_img_value,
-                              get_last_report)
 from login import login
-
-NEED_BEFORE = False  # 如需补报则置为True，否则False
-START_DT = dt.datetime(2021, 4, 20)  # 需要补报的起始日期
-RETRY = 5
-RETRY_TIMEOUT = 120
 
 
 # 获取东八区时间
@@ -41,129 +35,98 @@ def get_time():
     return t
 
 
-def report_day(sess, t):
-    url = f'https://selfreport.shu.edu.cn/DayReport.aspx?day={t.year}-{t.month}-{t.day}'
+def get_last_report(browser, t):
+    print('#正在获取前一天的填报信息...')
 
-    for _ in range(RETRY):
-        try:
-            r = sess.get(url, allow_redirects=False)
-        except Exception as e:
-            print(e)
-            time.sleep(RETRY_TIMEOUT)
-            continue
-        break
+    t = t - dt.timedelta(days=1)
+    browser.get(f'https://selfreport.shu.edu.cn/ViewDayReport.aspx?day={t.year}-{t.month}-{t.day}')
+
+    # 是否家庭地址
+    ShiFSH = '上海' in browser.find_element(By.CSS_SELECTOR, '#ctl03_ShiFSH #ctl03_ShiFSH-inputEl').text
+    ShiFZJ = 'f-checked' in browser.find_element(By.CSS_SELECTOR, '#ctl03_ShiFZJ .f-field-checkbox-icon').get_attribute('class')
+
+    return ShiFSH, ShiFZJ
+
+
+def report_day(browser: webdriver.Chrome,
+               ShiFSH: bool,
+               ShiFZJ: bool,
+               t: dt.datetime):
+    browser.get(f'https://selfreport.shu.edu.cn/DayReport.aspx?day={t.year}-{t.month}-{t.day}')
+    time.sleep(1)
+
+    # 承诺
+    print('承诺')
+    browser.find_element(By.ID, 'p1_ChengNuo-inputEl-icon').click()
+    time.sleep(0.5)
+
+    # 答题
+    print('答题')
+    checkboxes = browser.find_elements(By.CSS_SELECTOR, '#p1_pnlDangSZS .f-field-checkbox-icon')
+    checkboxes[0].click()
+    time.sleep(0.5)
+
+    # 是否在上海
+    print('是否在上海')
+    checkboxes = browser.find_elements(By.CSS_SELECTOR, '#p1_ShiFSH .f-field-checkbox-icon')
+    checkboxes[1 if ShiFSH else 2].click()
+    time.sleep(0.5)
+
+    # 是否家庭地址
+    print('是否家庭地址')
+    checkboxes = browser.find_elements(By.CSS_SELECTOR, '#p1_ShiFZJ .f-field-checkbox-icon')
+    checkboxes[0 if ShiFZJ else 1].click()
+    time.sleep(0.5)
+
+    # 随申码
+    SuiSM = browser.find_element(By.ID, 'p1_pImages_HFimgSuiSM-inputEl')
+    if SuiSM.get_attribute('value') == '':
+        print('未检测到已提交随申码')
+        upload = browser.find_element(By.NAME, 'p1$pImages$fileSuiSM')
+        upload.send_keys(os.path.dirname(os.path.abspath(__file__)) + os.path.sep + 'xingcm.jpg')
+        time.sleep(1)
+
+        browser.find_element(By.CSS_SELECTOR, '#p1_pImages_fileSuiSM a.f-btn').click()
+        time.sleep(1)
+
+        print(SuiSM.get_attribute('value'))
     else:
-        print('获取每日一报起始页超时')
-        return False
+        print(f'已提交随申码')
 
-    soup = BeautifulSoup(r.text, 'html.parser')
-    view_state = soup.find('input', attrs={'name': '__VIEWSTATE'})
+    # 行程码
+    XingCM = browser.find_element(By.ID, 'p1_pImages_HFimgXingCM-inputEl')
+    if XingCM.get_attribute('value') == '':
+        print('未检测到已提交行程码')
+        upload = browser.find_element(By.NAME, 'p1$pImages$fileXingCM')
+        upload.send_keys(os.path.dirname(os.path.abspath(__file__)) + os.path.sep + 'xingcm.jpg')
+        time.sleep(1)
 
-    if view_state is None:
-        if '上海大学统一身份认证' in r.text:
-            print('登录信息过期')
-        else:
-            print(r.text)
-        return False
+        browser.find_element(By.CSS_SELECTOR, '#p1_pImages_fileXingCM a').click()
+        time.sleep(1)
 
-    BaoSRQ = t.strftime('%Y-%m-%d')
-    ShiFSH, ShiFZX, ddlSheng, ddlShi, ddlXian, XiangXDZ, ShiFZJ = get_last_report(sess, t)
-    SuiSM, XingCM = get_img_value(sess)
+        print(XingCM.get_attribute('value'))
+    else:
+        print(f'已提交行程码')
 
-    print('#信息获取完成#')
-    print(f'是否在上海：{ShiFSH}')
-    print(f'是否在校：{ShiFZX}')
-    print(ddlSheng, ddlShi, ddlXian, f'###{XiangXDZ[-2:]}')
-    print(f'是否为家庭地址：{ShiFZJ}')
-    print(f'随申码：{SuiSM}')
-    print(f'行程码：{XingCM}')
+    # 确认提交
+    browser.find_element(By.ID, 'p1_ctl02_btnSubmit').click()
+    time.sleep(1)
+    messagebox = browser.find_element(By.CLASS_NAME, 'f-messagebox')
 
-    for _ in range(RETRY):
-        try:
-            r = sess.post(url, data={
-                "__EVENTTARGET": "p1$ctl02$btnSubmit",
-                "__EVENTARGUMENT": "",
-                "__VIEWSTATE": view_state['value'],
-                "__VIEWSTATEGENERATOR": "7AD7E509",
-                "p1$ChengNuo": "p1_ChengNuo",
-                "p1$pnlDangSZS$DangSZS": "A",
-                "p1$BaoSRQ": BaoSRQ,
-                "p1$DangQSTZK": "良好",
-                "p1$TiWen": "",
-                "p1$pImages$HFimgSuiSM": SuiSM,
-                "p1$pImages$HFimgXingCM": XingCM,
-                "p1$JiuYe_ShouJHM": "",
-                "p1$JiuYe_Email": "",
-                "p1$JiuYe_Wechat": "",
-                "p1$QiuZZT": "",
-                "p1$JiuYKN": "",
-                "p1$JiuYSJ": "",
-                "p1$GuoNei": "国内",
-                "p1$ddlGuoJia$Value": "-1",
-                "p1$ddlGuoJia": "选择国家",
-                "p1$ShiFSH": ShiFSH,
-                "p1$ShiFZX": ShiFZX,
-                "p1$ddlSheng$Value": ddlSheng,
-                "p1$ddlSheng": ddlSheng,
-                "p1$ddlShi$Value": ddlShi,
-                "p1$ddlShi": ddlShi,
-                "p1$ddlXian$Value": ddlXian,
-                "p1$ddlXian": ddlXian,
-                "p1$XiangXDZ": XiangXDZ,
-                "p1$ShiFZJ": ShiFZJ,
-                "p1$FengXDQDL": "否",
-                "p1$TongZWDLH": "否",
-                "p1$CengFWH": "否",
-                "p1$CengFWH_RiQi": "",
-                "p1$CengFWH_BeiZhu": "",
-                "p1$JieChu": "否",
-                "p1$JieChu_RiQi": "",
-                "p1$JieChu_BeiZhu": "",
-                "p1$TuJWH": "否",
-                "p1$TuJWH_RiQi": "",
-                "p1$TuJWH_BeiZhu": "",
-                "p1$QueZHZJC$Value": "否",
-                "p1$QueZHZJC": "否",
-                "p1$DangRGL": "否",
-                "p1$GeLDZ": "",
-                "p1$FanXRQ": "",
-                "p1$WeiFHYY": "",
-                "p1$ShangHJZD": "",
-                "p1$DaoXQLYGJ": "没有",
-                "p1$DaoXQLYCS": "没有",
-                "p1$JiaRen_BeiZhu": "",
-                "p1$SuiSM": "绿色",
-                "p1$LvMa14Days": "是",
-                "p1$Address2": "",
-                "p1_pnlDangSZS_Collapsed": "false",
-                "p1_pImages_Collapsed": "false",
-                "p1_ContentPanel1_Collapsed": "true",
-                "p1_GeLSM_Collapsed": "false",
-                "p1_Collapsed": "false",
-                "F_STATE": generate_fstate_day(BaoSRQ, ShiFSH, ShiFZX,
-                                               ddlSheng, ddlShi, ddlXian, XiangXDZ, ShiFZJ,
-                                               SuiSM, XingCM)
-            }, headers={
-                'X-Requested-With': 'XMLHttpRequest',
-                'X-FineUI-Ajax': 'true'
-            }, allow_redirects=False)
-        except Exception as e:
-            print(e)
-            time.sleep(RETRY_TIMEOUT)
-            continue
+    if '确定' in messagebox.text:
+        for a in messagebox.find_elements(By.TAG_NAME, 'a'):
+            if a.text == '确定':
+                a.click()
+                break
 
-        if any(i in r.text for i in ['提交成功', '历史信息不能修改', '现在还没到晚报时间', '只能填报当天或补填以前的信息']):
+        messagebox = browser.find_element(By.CLASS_NAME, 'f-messagebox')
+        if '提交成功' in messagebox.text:
             return True
-        elif '数据库有点忙' in r.text:
-            print('数据库有点忙，重试')
-            time.sleep(RETRY_TIMEOUT)
-            continue
         else:
-            print(r.text)
+            print(messagebox.text)
             return False
-
     else:
-        print('每日一报填报超时')
+        print(messagebox.text)
         return False
 
 
@@ -210,8 +173,10 @@ if __name__ == "__main__":
         chrome_options.add_argument('--headless')
         chrome_options.add_argument('--disable-gpu')
 
-        s = Service()
+        s = Service('C:/App/chromedriver.exe')
+        # s = Service()
         browser = webdriver.Chrome(options=chrome_options, service=s)
+        browser.implicitly_wait(10)
 
         login_result = login(browser, user, config[user]['pwd'])
 
@@ -219,6 +184,32 @@ if __name__ == "__main__":
             print('登录成功')
         else:
             print('登录失败')
+            failed_users.append(user_abbr)
+
+        sess = requests.Session()
+        for cookie in browser.get_cookies():
+            sess.cookies.set(cookie['name'], cookie['value'])
+
+        notice(sess)
+        view_messages(sess)
+
+        now = get_time()
+        ShiFSH, ShiFZJ = get_last_report(browser, now)
+
+        try:
+            report_result = report_day(browser,
+                                       ShiFSH,
+                                       ShiFZJ,
+                                       now)
+        except:
+            print(traceback.format_exc())
+            report_result = False
+
+        if report_result:
+            print(f'{now} 每日一报提交成功')
+            succeeded_users.append(user_abbr)
+        else:
+            print(f'{now} 每日一报提交失败')
             failed_users.append(user_abbr)
 
         if i < len(config) - 1:
