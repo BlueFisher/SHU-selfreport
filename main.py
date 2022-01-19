@@ -210,7 +210,7 @@ if __name__ == "__main__":
         chrome_options.add_argument('--headless')
         chrome_options.add_argument('--disable-gpu')
 
-        s = Service('C:/App/chromedriver.exe')
+        s = Service()
         browser = webdriver.Chrome(options=chrome_options, service=s)
 
         login_result = login(browser, user, config[user]['pwd'])
