@@ -3,3 +3,4 @@ beautifulsoup4>=4.0.0
 requests>=2.0.0
 rsa>=4.0.0
 selenium>=4.0.0
+pillow>=8.0.0

@@ -9,10 +9,11 @@ from pathlib import Path
 
 import requests
 import yaml
-from bs4 import BeautifulSoup
 from selenium import webdriver
 from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.common.by import By
+
+from PIL import Image, ImageDraw, ImageFont
 
 from login import login
 
@@ -46,6 +47,17 @@ def get_last_report(browser, t):
     ShiFZJ = 'f-checked' in browser.find_element(By.CSS_SELECTOR, '#ctl03_ShiFZJ .f-field-checkbox-icon').get_attribute('class')
 
     return ShiFSH, ShiFZJ
+
+
+def draw_XingCM(t):
+    image = Image.open('xingcm.jpg')
+
+    font = ImageFont.truetype('Arial.ttf', 46)
+    draw = ImageDraw.Draw(image)
+    draw.text((295, 428), t.strftime('%Y-%m-%d %H:%M:%S'), font=font, fill=(143, 142, 147))
+    image.save('xingcm_a.jpg', 'jpeg')
+
+    return os.path.dirname(os.path.abspath(__file__)) + os.path.sep + 'xingcm_a.jpg'
 
 
 def report_day(browser: webdriver.Chrome,
@@ -83,7 +95,7 @@ def report_day(browser: webdriver.Chrome,
     if SuiSM.get_attribute('value') == '':
         print('未检测到已提交随申码')
         upload = browser.find_element(By.NAME, 'p1$pImages$fileSuiSM')
-        upload.send_keys(os.path.dirname(os.path.abspath(__file__)) + os.path.sep + 'xingcm.jpg')
+        upload.send_keys(draw_XingCM(t))
         time.sleep(1)
 
         browser.find_element(By.CSS_SELECTOR, '#p1_pImages_fileSuiSM a.f-btn').click()
@@ -98,7 +110,7 @@ def report_day(browser: webdriver.Chrome,
     if XingCM.get_attribute('value') == '':
         print('未检测到已提交行程码')
         upload = browser.find_element(By.NAME, 'p1$pImages$fileXingCM')
-        upload.send_keys(os.path.dirname(os.path.abspath(__file__)) + os.path.sep + 'xingcm.jpg')
+        upload.send_keys(draw_XingCM(t))
         time.sleep(1)
 
         browser.find_element(By.CSS_SELECTOR, '#p1_pImages_fileXingCM a').click()
