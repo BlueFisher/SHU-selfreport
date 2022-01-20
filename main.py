@@ -37,30 +37,41 @@ def get_time():
 
 
 def get_last_report(browser, t):
+    print('#正在获取手机号...')
+    browser.get('https://selfreport.shu.edu.cn/PersonInfo.aspx')
+    time.sleep(1)
+
+    # 手机号
+    ShouJHM = browser.find_element(By.ID, 'persinfo_ctl00_ShouJHM-inputEl').get_attribute('value')
+
     print('#正在获取前一天的填报信息...')
 
     t = t - dt.timedelta(days=1)
     browser.get(f'https://selfreport.shu.edu.cn/ViewDayReport.aspx?day={t.year}-{t.month}-{t.day}')
+    time.sleep(1)
 
     # 是否家庭地址
     ShiFSH = '上海' in browser.find_element(By.CSS_SELECTOR, '#ctl03_ShiFSH #ctl03_ShiFSH-inputEl').text
     ShiFZJ = 'f-checked' in browser.find_element(By.CSS_SELECTOR, '#ctl03_ShiFZJ .f-field-checkbox-icon').get_attribute('class')
 
-    return ShiFSH, ShiFZJ
+    return ShouJHM, ShiFSH, ShiFZJ
 
 
-def draw_XingCM(t):
+def draw_XingCM(ShouJHM: str, t):
     image = Image.open('xingcm.jpg')
 
-    font = ImageFont.truetype('Arial.ttf', 46)
+    font1 = ImageFont.truetype('yahei.ttf', 30)
+    font2 = ImageFont.truetype('yahei.ttf', 36)
     draw = ImageDraw.Draw(image)
-    draw.text((295, 428), t.strftime('%Y-%m-%d %H:%M:%S'), font=font, fill=(143, 142, 147))
+    draw.text((414, 380), f'{ShouJHM[:3]}****{ShouJHM[-4:]}的动态行程卡', font=font1, fill=(39, 39, 39), anchor='mm')
+    draw.text((414, 460), '更新于：' + t.strftime('%Y-%m-%d %H:%M:%S'), font=font2, fill=(143, 142, 147), anchor='mm')
     image.save('xingcm_a.jpg', 'jpeg')
 
     return os.path.dirname(os.path.abspath(__file__)) + os.path.sep + 'xingcm_a.jpg'
 
 
 def report_day(browser: webdriver.Chrome,
+               ShouJHM: str,
                ShiFSH: bool,
                ShiFZJ: bool,
                t: dt.datetime):
@@ -91,34 +102,42 @@ def report_day(browser: webdriver.Chrome,
     time.sleep(0.5)
 
     # 随申码
-    SuiSM = browser.find_element(By.ID, 'p1_pImages_HFimgSuiSM-inputEl')
-    if SuiSM.get_attribute('value') == '':
-        print('未检测到已提交随申码')
-        upload = browser.find_element(By.NAME, 'p1$pImages$fileSuiSM')
-        upload.send_keys(draw_XingCM(t))
-        time.sleep(1)
+    try:
+        SuiSM = browser.find_element(By.ID, 'p1_pImages_HFimgSuiSM-inputEl')
+        if SuiSM.get_attribute('value') != '':
+            print('未检测到已提交随申码')
+            upload = browser.find_element(By.NAME, 'p1$pImages$fileSuiSM')
+            upload.send_keys(draw_XingCM(ShouJHM, t))
+            time.sleep(1)
 
-        browser.find_element(By.CSS_SELECTOR, '#p1_pImages_fileSuiSM a.f-btn').click()
-        time.sleep(1)
+            browser.find_element(By.CSS_SELECTOR, '#p1_pImages_fileSuiSM a.f-btn').click()
+            time.sleep(1)
 
-        print(SuiSM.get_attribute('value'))
-    else:
-        print(f'已提交随申码')
+            print(SuiSM.get_attribute('value'))
+        else:
+            print(f'已提交随申码')
+    except Exception as e:
+        print(e)
+        print('随申码提交失败')
 
     # 行程码
-    XingCM = browser.find_element(By.ID, 'p1_pImages_HFimgXingCM-inputEl')
-    if XingCM.get_attribute('value') == '':
-        print('未检测到已提交行程码')
-        upload = browser.find_element(By.NAME, 'p1$pImages$fileXingCM')
-        upload.send_keys(draw_XingCM(t))
-        time.sleep(1)
+    try:
+        XingCM = browser.find_element(By.ID, 'p1_pImages_HFimgXingCM-inputEl')
+        if XingCM.get_attribute('value') != '':
+            print('未检测到已提交行程码')
+            upload = browser.find_element(By.NAME, 'p1$pImages$fileXingCM')
+            upload.send_keys(draw_XingCM(ShouJHM, t))
+            time.sleep(1)
 
-        browser.find_element(By.CSS_SELECTOR, '#p1_pImages_fileXingCM a').click()
-        time.sleep(1)
+            browser.find_element(By.CSS_SELECTOR, '#p1_pImages_fileXingCM a').click()
+            time.sleep(1)
 
-        print(XingCM.get_attribute('value'))
-    else:
-        print(f'已提交行程码')
+            print(XingCM.get_attribute('value'))
+        else:
+            print(f'已提交行程码')
+    except Exception as e:
+        print(e)
+        print('行程码提交失败')
 
     # 确认提交
     browser.find_element(By.ID, 'p1_ctl02_btnSubmit').click()
@@ -151,7 +170,7 @@ def view_messages(sess):
             f_items = json.loads(h[h.find('=') + 1:])['F_Items']
             for item in f_items:
                 if '未读' in item[1]:
-                    sess.get(f'https://selfreport.shu.edu.cn{item[4]}', allow_redirects=False)
+                    sess.get(f'https://selfreport.shu.edu.cn{item[4]}')
                     print('已读', item[4])
             break
 
@@ -206,10 +225,11 @@ if __name__ == "__main__":
         view_messages(sess)
 
         now = get_time()
-        ShiFSH, ShiFZJ = get_last_report(browser, now)
+        ShouJHM, ShiFSH, ShiFZJ = get_last_report(browser, now)
 
         try:
             report_result = report_day(browser,
+                                       ShouJHM,
                                        ShiFSH,
                                        ShiFZJ,
                                        now)
