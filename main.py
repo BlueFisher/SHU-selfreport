@@ -104,7 +104,7 @@ def report_day(browser: webdriver.Chrome,
     # 随申码
     try:
         SuiSM = browser.find_element(By.ID, 'p1_pImages_HFimgSuiSM-inputEl')
-        if SuiSM.get_attribute('value') != '':
+        if SuiSM.get_attribute('value') == '':
             print('未检测到已提交随申码')
             upload = browser.find_element(By.NAME, 'p1$pImages$fileSuiSM')
             upload.send_keys(draw_XingCM(ShouJHM, t))
@@ -123,7 +123,7 @@ def report_day(browser: webdriver.Chrome,
     # 行程码
     try:
         XingCM = browser.find_element(By.ID, 'p1_pImages_HFimgXingCM-inputEl')
-        if XingCM.get_attribute('value') != '':
+        if XingCM.get_attribute('value') == '':
             print('未检测到已提交行程码')
             upload = browser.find_element(By.NAME, 'p1$pImages$fileXingCM')
             upload.send_keys(draw_XingCM(ShouJHM, t))
