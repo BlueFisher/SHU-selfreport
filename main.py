@@ -40,25 +40,36 @@ def get_time():
     return t
 
 
-def get_last_report(browser, t):
-    print('#正在获取手机号...')
+def get_last_report(browser: webdriver.Chrome, t):
+    print('正在获取手机号...')
     browser.get('https://selfreport.shu.edu.cn/PersonInfo.aspx')
     time.sleep(1)
 
     # 手机号
     ShouJHM = browser.find_element(By.ID, 'persinfo_ctl00_ShouJHM-inputEl').get_attribute('value')
 
-    print('#正在获取前一天的填报信息...')
+    print('正在获取前一天的填报信息...')
 
     t = t - dt.timedelta(days=1)
     browser.get(f'https://selfreport.shu.edu.cn/ViewDayReport.aspx?day={t.year}-{t.month}-{t.day}')
     time.sleep(1)
 
+    # 是否在上海，在上海（校内），在上海（不在校内），不在上海
+    ShiFSH = browser.find_element(By.CSS_SELECTOR, '#ctl03_ShiFSH #ctl03_ShiFSH-inputEl').text
+    # 是否住校
+    ShiFZX = 'f-checked' in browser.find_element(By.CSS_SELECTOR, '#ctl03_ShiFZX .f-field-checkbox-icon').get_attribute('class')
+    # 省
+    ddlSheng = browser.find_element(By.CSS_SELECTOR, '#ctl03_ddlSheng #ctl03_ddlSheng-inputEl').get_attribute('value')
+    # 市
+    ddlShi = browser.find_element(By.CSS_SELECTOR, '#ctl03_ddlShi #ctl03_ddlShi-inputEl').get_attribute('value')
+    # 县
+    ddlXian = browser.find_element(By.CSS_SELECTOR, '#ctl03_ddlXian #ctl03_ddlXian-inputEl').get_attribute('value')
+    # 详细地址
+    XiangXDZ = browser.find_element(By.CSS_SELECTOR, '#ctl03_XiangXDZ #ctl03_XiangXDZ-inputEl').get_attribute('value')
     # 是否家庭地址
-    ShiFSH = '上海' in browser.find_element(By.CSS_SELECTOR, '#ctl03_ShiFSH #ctl03_ShiFSH-inputEl').text
     ShiFZJ = 'f-checked' in browser.find_element(By.CSS_SELECTOR, '#ctl03_ShiFZJ .f-field-checkbox-icon').get_attribute('class')
 
-    return ShouJHM, ShiFSH, ShiFZJ
+    return ShouJHM, ShiFSH, ShiFZX, ddlSheng, ddlShi, ddlXian, XiangXDZ, ShiFZJ
 
 
 def draw_XingCM(ShouJHM: str, t):
@@ -75,32 +86,66 @@ def draw_XingCM(ShouJHM: str, t):
 
 
 def report_day(browser: webdriver.Chrome,
-               ShouJHM: str,
-               ShiFSH: bool,
-               ShiFZJ: bool,
+               ShouJHM, ShiFSH, ShiFZX, ddlSheng, ddlShi, ddlXian, XiangXDZ, ShiFZJ,
                t: dt.datetime):
     browser.get(f'https://selfreport.shu.edu.cn/DayReport.aspx?day={t.year}-{t.month}-{t.day}')
     time.sleep(1)
 
-    # 承诺
     print('承诺')
     browser.find_element(By.ID, 'p1_ChengNuo-inputEl-icon').click()
-    time.sleep(0.5)
 
-    # 答题
     print('答题')
     checkboxes = browser.find_elements(By.CSS_SELECTOR, '#p1_pnlDangSZS .f-field-checkbox-icon')
     checkboxes[0].click()
-    time.sleep(0.5)
 
-    # 是否在上海
-    print('是否在上海')
+    print('是否在上海', ShiFSH)
+    # 在上海（校内），在上海（不在校内），不在上海
     checkboxes = browser.find_elements(By.CSS_SELECTOR, '#p1_ShiFSH .f-field-checkbox-icon')
-    checkboxes[1 if ShiFSH else 2].click()
-    time.sleep(0.5)
+    if ShiFSH == '在上海（不在校内）':
+        checkboxes[1].click()
+    elif ShiFSH == '不在上海':
+        checkboxes[2].click()
+    else:
+        checkboxes[0].click()
+    time.sleep(1)
 
-    # 是否家庭地址
-    print('是否家庭地址')
+    print('是否住校', ShiFZX)
+    try:
+        checkboxes = browser.find_elements(By.CSS_SELECTOR, '#p1_ShiFZX .f-field-checkbox-icon')
+        checkboxes[0 if ShiFZX else 1].click()
+    except Exception as e:
+        print('是否住校提交失败')
+
+    print('省市县详细地址', ddlSheng, ddlShi, ddlXian, XiangXDZ[:2])
+    elem = browser.find_element(By.CSS_SELECTOR, "#p1_ddlSheng input[name='p1$ddlSheng$Value']")
+    browser.execute_script('''
+        var elem = arguments[0];
+        var value = arguments[1];
+        elem.value = value;
+    ''', elem, ddlSheng)
+
+    elem = browser.find_element(By.CSS_SELECTOR, "#p1_ddlShi input[name='p1$ddlShi$Value']")
+    browser.execute_script('''
+        var elem = arguments[0];
+        var value = arguments[1];
+        elem.value = value;
+    ''', elem, ddlShi)
+
+    elem = browser.find_element(By.CSS_SELECTOR, "#p1_ddlXian input[name='p1$ddlXian$Value']")
+    browser.execute_script('''
+        var elem = arguments[0];
+        var value = arguments[1];
+        elem.value = value;
+    ''', elem, ddlXian)
+
+    elem = browser.find_element(By.CSS_SELECTOR, "#p1_XiangXDZ #p1_XiangXDZ-inputEl")
+    browser.execute_script('''
+        var elem = arguments[0];
+        var value = arguments[1];
+        elem.value = value;
+    ''', elem, XiangXDZ)
+
+    print('是否家庭地址', ShiFZJ)
     checkboxes = browser.find_elements(By.CSS_SELECTOR, '#p1_ShiFZJ .f-field-checkbox-icon')
     checkboxes[0 if ShiFZJ else 1].click()
     time.sleep(0.5)
@@ -240,12 +285,10 @@ if __name__ == "__main__":
             print(f'第{retry}次尝试填报')
 
             try:
-                ShouJHM, ShiFSH, ShiFZJ = get_last_report(browser, now)
+                infos = get_last_report(browser, now)
 
                 report_result = report_day(browser,
-                                           ShouJHM,
-                                           ShiFSH,
-                                           ShiFZJ,
+                                           *infos,
                                            now)
 
                 break
