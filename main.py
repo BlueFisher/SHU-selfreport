@@ -18,6 +18,10 @@ from PIL import Image, ImageDraw, ImageFont
 from login import login
 
 
+RETRY = 5
+RETRY_TIMEOUT = 120
+
+
 # 获取东八区时间
 def get_time():
     # 获取0时区时间，变换为东八区时间
@@ -162,21 +166,29 @@ def report_day(browser: webdriver.Chrome,
 
 
 def view_messages(sess):
-    r = sess.get('https://selfreport.shu.edu.cn/MyMessages.aspx')
-    t = re.findall(r'^.*//\]', r.text, re.MULTILINE)[0]
-    htmls = t.split(';var ')
-    for h in htmls:
-        if '未读' in h:
-            f_items = json.loads(h[h.find('=') + 1:])['F_Items']
-            for item in f_items:
-                if '未读' in item[1]:
-                    sess.get(f'https://selfreport.shu.edu.cn{item[4]}')
-                    print('已读', item[4])
-            break
+    try:
+        r = sess.get('https://selfreport.shu.edu.cn/MyMessages.aspx')
+        t = re.findall(r'^.*//\]', r.text, re.MULTILINE)[0]
+        htmls = t.split(';var ')
+        for h in htmls:
+            if '未读' in h:
+                f_items = json.loads(h[h.find('=') + 1:])['F_Items']
+                for item in f_items:
+                    if '未读' in item[1]:
+                        sess.get(f'https://selfreport.shu.edu.cn{item[4]}')
+                        print('已读', item[4])
+                break
+    except Exception as e:
+        print(e)
+        print('view_messages 失败，已忽略')
 
 
 def notice(sess):
-    sess.post('https://selfreport.shu.edu.cn/DayReportNotice.aspx')
+    try:
+        sess.post('https://selfreport.shu.edu.cn/DayReportNotice.aspx')
+    except Exception as e:
+        print(e)
+        print('notice 失败，已忽略')
 
 
 if __name__ == "__main__":
@@ -204,7 +216,6 @@ if __name__ == "__main__":
         chrome_options.add_argument('--headless')
         chrome_options.add_argument('--disable-gpu')
 
-        # s = Service('C:/App/chromedriver.exe')
         s = Service()
         browser = webdriver.Chrome(options=chrome_options, service=s)
         browser.implicitly_wait(10)
@@ -225,17 +236,22 @@ if __name__ == "__main__":
         view_messages(sess)
 
         now = get_time()
-        ShouJHM, ShiFSH, ShiFZJ = get_last_report(browser, now)
+        for retry in range(RETRY):
+            print(f'第{retry}次尝试填报')
 
-        try:
-            report_result = report_day(browser,
-                                       ShouJHM,
-                                       ShiFSH,
-                                       ShiFZJ,
-                                       now)
-        except:
-            print(traceback.format_exc())
-            report_result = False
+            try:
+                ShouJHM, ShiFSH, ShiFZJ = get_last_report(browser, now)
+
+                report_result = report_day(browser,
+                                           ShouJHM,
+                                           ShiFSH,
+                                           ShiFZJ,
+                                           now)
+
+                break
+            except:
+                print(traceback.format_exc())
+                report_result = False
 
         if report_result:
             print(f'{now} 每日一报提交成功')
@@ -245,7 +261,7 @@ if __name__ == "__main__":
             failed_users.append(user_abbr)
 
         if i < len(config) - 1:
-            time.sleep(120)
+            time.sleep(RETRY_TIMEOUT)
 
     if len(failed_users) != 0:
         succeeded_users = ", ".join(succeeded_users)
