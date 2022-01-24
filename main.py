@@ -12,6 +12,7 @@ import yaml
 from selenium import webdriver
 from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.common.by import By
+from selenium.webdriver.support.ui import WebDriverWait
 
 from PIL import Image, ImageDraw, ImageFont
 
@@ -20,6 +21,30 @@ from login import login
 
 RETRY = 5
 RETRY_TIMEOUT = 120
+
+
+class element_has_value():
+    def __init__(self, locator):
+        self.locator = locator
+
+    def __call__(self, driver):
+        element = driver.find_element(*self.locator)   # Finding the referenced element
+        if element.get_attribute('value') != '':
+            return element
+        else:
+            return False
+
+
+class element_has_no_value():
+    def __init__(self, locator):
+        self.locator = locator
+
+    def __call__(self, driver):
+        element = driver.find_element(*self.locator)   # Finding the referenced element
+        if element.get_attribute('value') == '':
+            return element
+        else:
+            return False
 
 
 # 获取东八区时间
@@ -157,10 +182,14 @@ def report_day(browser: webdriver.Chrome,
             print('未检测到已提交随申码')
             upload = browser.find_element(By.NAME, 'p1$pImages$fileSuiSM')
             upload.send_keys(draw_XingCM(ShouJHM, t))
-            time.sleep(1)
+            WebDriverWait(browser, 10).until(
+                element_has_no_value((By.NAME, 'p1$pImages$fileSuiSM'))
+            )
 
             browser.find_element(By.CSS_SELECTOR, '#p1_pImages_fileSuiSM a.f-btn').click()
-            time.sleep(1)
+            WebDriverWait(browser, 10).until(
+                element_has_value((By.ID, 'p1_pImages_HFimgSuiSM-inputEl'))
+            )
 
             print(SuiSM.get_attribute('value'))
         else:
@@ -176,10 +205,14 @@ def report_day(browser: webdriver.Chrome,
             print('未检测到已提交行程码')
             upload = browser.find_element(By.NAME, 'p1$pImages$fileXingCM')
             upload.send_keys(draw_XingCM(ShouJHM, t))
-            time.sleep(1)
+            WebDriverWait(browser, 10).until(
+                element_has_no_value((By.NAME, 'p1$pImages$fileXingCM'))
+            )
 
             browser.find_element(By.CSS_SELECTOR, '#p1_pImages_fileXingCM a').click()
-            time.sleep(1)
+            WebDriverWait(browser, 10).until(
+                element_has_value((By.ID, 'p1_pImages_HFimgXingCM-inputEl'))
+            )
 
             print(XingCM.get_attribute('value'))
         else:
