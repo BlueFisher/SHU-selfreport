@@ -305,6 +305,7 @@ if __name__ == "__main__":
         else:
             print('登录失败')
             failed_users.append(user_abbr)
+            continue
 
         sess = requests.Session()
         for cookie in browser.get_cookies():
