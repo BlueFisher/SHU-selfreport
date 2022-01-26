@@ -119,9 +119,10 @@ def report_day(browser: webdriver.Chrome,
     print('承诺')
     browser.find_element(By.ID, 'p1_ChengNuo-inputEl-icon').click()
 
-    print('答题')
     checkboxes = browser.find_elements(By.CSS_SELECTOR, '#p1_pnlDangSZS .f-field-checkbox-icon')
-    checkboxes[0].click()
+    if len(checkboxes) > 0:  # 有的人没有答题
+        print('答题')
+        checkboxes[0].click()
 
     print('是否在上海', ShiFSH)
     # 在上海（校内），在上海（不在校内），不在上海
