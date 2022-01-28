@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 import datetime as dt
 import json
 import os
@@ -47,7 +48,7 @@ class element_has_no_value():
             return False
 
 
-# 获取东八区时间
+#获取东八区时间
 def get_time():
     # 获取0时区时间，变换为东八区时间
     # 原因：运行程序的服务器所处时区不确定
@@ -294,6 +295,8 @@ if __name__ == "__main__":
 
         chrome_options.add_argument('--headless')
         chrome_options.add_argument('--disable-gpu')
+        chrome_options.add_argument("window-size=428,843")
+        chrome_options.add_argument("--no-sandbox")
 
         s = Service()
         browser = webdriver.Chrome(options=chrome_options, service=s)
