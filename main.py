@@ -2,7 +2,6 @@
 import datetime as dt
 import json
 import os
-from pickle import TRUE
 import re
 import sys
 import time
@@ -20,10 +19,11 @@ from PIL import Image, ImageDraw, ImageFont
 
 from login import login
 
-NEED_BEFORE = TRUE  # 如需补报则置为True，否则False
+NEED_BEFORE = False  # 如需补报则置为True，否则False
 START_DT = dt.datetime(2022, 1, 14)  # 需要补报的起始日期
 RETRY = 5
 RETRY_TIMEOUT = 120
+
 
 class element_has_value():
     def __init__(self, locator):
@@ -49,7 +49,7 @@ class element_has_no_value():
             return False
 
 
-#获取东八区时间
+# 获取东八区时间
 def get_time():
     # 获取0时区时间，变换为东八区时间
     # 原因：运行程序的服务器所处时区不确定
@@ -330,10 +330,10 @@ if __name__ == "__main__":
                 infos = get_last_report(browser, now)
                 if NEED_BEFORE:
                     t = START_DT
-                    while t < now:                
+                    while t < now:
                         report_result = report_day(browser,
-                                                *infos,
-                                                t)
+                                                   *infos,
+                                                   t)
                         if report_result:
                             print(f'{now} 每日一报补报成功')
                         else:
