@@ -1,8 +1,11 @@
 # 用户设置
 # 学号:
 #   pwd：密码
+#   sendkey: Server酱推送key，不使用则默认为no
 # 注意引号
 "00000000":
   pwd: "xxxxx"
+  sendkey: "no"
 "11111111":
   pwd: "xxxxx"
+  sendkey: "no"

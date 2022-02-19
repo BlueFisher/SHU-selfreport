@@ -36,7 +36,7 @@
 
 ### 1. 你有服务器，只在自己服务器上进行自动打卡
 
-在 `config.yaml` 中设置所有需要打卡的学号密码
+在 `config.yaml` 中设置所有需要打卡的学号密码，若不使用Server酱进行推送，请将`sendkey`一项值设置为`"no"`
 
 针对Ubuntu，编辑定时执行程序cron
 
@@ -74,7 +74,7 @@ crontab -e
 
 `NAME` 设置为 `USERS`
 
-`VALUE` 设置为 `学号1,密码1;学号2,密码2` 的格式，注意逗号与分号的区分，学号密码之间用逗号，每两个学号之间用分号，必须是英文半角符号，如果只有一个学号密码则不需要加分号
+`VALUE` 设置为 `学号1,密码1,no;学号2,密码2,no` 的格式，注意逗号与分号的区分，学号密码之间用逗号，每两个学号之间用分号，必须是英文半角符号，如果只有一个学号密码则不需要加分号
 
 ![](images/secrets.png)
 
@@ -101,6 +101,30 @@ crontab -e
 
 ![](images/fetch_upstream_02.png)
 
+## 使用Server酱推送
+
+什么是Server酱？
+
+「Server酱」，英文名「ServerChan」，是一款「手机」和「服务器」、「智能设备」之间的通信软件。 说人话？就是从服务器、路由器等设备上推消息到手机的工具。
+
+### 登录「Server酱」官网
+
+[官网传送门](https://sct.ftqq.com/login)  
+
+### 微信扫码关注后点击继续  
+
+![image_1641818508926.png](https://s2.loli.net/2022/01/10/vp7Hbr2zMix4CUA.png)
+
+### 选择 SendKey 选项卡，点击复制  
+
+复制保留 Sendkey
+![image_1641818664055.png](https://s2.loli.net/2022/01/10/98HgAE2TnktKZvq.png)
+
+将前文对应的`no`，替换为获得的Sendkey即可
+
+### 推送效果如下
+
+![](images/serverchan_result.jpg)
 
 ## 依赖
 

@@ -30,7 +30,8 @@ class element_has_value():
         self.locator = locator
 
     def __call__(self, driver):
-        element = driver.find_element(*self.locator)   # Finding the referenced element
+        # Finding the referenced element
+        element = driver.find_element(*self.locator)
         if element.get_attribute('value') != '':
             return element
         else:
@@ -42,14 +43,25 @@ class element_has_no_value():
         self.locator = locator
 
     def __call__(self, driver):
-        element = driver.find_element(*self.locator)   # Finding the referenced element
+        # Finding the referenced element
+        element = driver.find_element(*self.locator)
         if element.get_attribute('value') == '':
             return element
         else:
             return False
 
+# Server酱推送
+
+
+def serverchan_push(sendkey, message):
+    # TODO 添加推送内容细节
+    url = f"https://sctapi.ftqq.com/{sendkey}.send"
+    data = {"title": "【每日一报推送】", "desp": message.replace("\n", "\n\n")}
+    requests.post(url, data=data)
 
 # 获取东八区时间
+
+
 def get_time():
     # 获取0时区时间，变换为东八区时间
     # 原因：运行程序的服务器所处时区不确定
@@ -73,30 +85,39 @@ def get_last_report(browser: webdriver.Chrome, t):
     time.sleep(1)
 
     # 手机号
-    ShouJHM = browser.find_element(By.ID, 'persinfo_ctl00_ShouJHM-inputEl').get_attribute('value')
+    ShouJHM = browser.find_element(
+        By.ID, 'persinfo_ctl00_ShouJHM-inputEl').get_attribute('value')
     if NEED_BEFORE:
         print('开始补报，正在获取补报日期前一天的填报信息...')
         t = START_DT - dt.timedelta(days=1)
     else:
         print('正在获取前一天的填报信息...')
         t = t - dt.timedelta(days=1)
-    browser.get(f'https://selfreport.shu.edu.cn/ViewDayReport.aspx?day={t.year}-{t.month}-{t.day}')
+    browser.get(
+        f'https://selfreport.shu.edu.cn/ViewDayReport.aspx?day={t.year}-{t.month}-{t.day}')
     time.sleep(1)
 
     # 是否在上海，在上海（校内），在上海（不在校内），不在上海
-    ShiFSH = browser.find_element(By.CSS_SELECTOR, '#ctl03_ShiFSH #ctl03_ShiFSH-inputEl').text
+    ShiFSH = browser.find_element(
+        By.CSS_SELECTOR, '#ctl03_ShiFSH #ctl03_ShiFSH-inputEl').text
     # 是否住校
-    ShiFZX = 'f-checked' in browser.find_element(By.CSS_SELECTOR, '#ctl03_ShiFZX .f-field-checkbox-icon').get_attribute('class')
+    ShiFZX = 'f-checked' in browser.find_element(
+        By.CSS_SELECTOR, '#ctl03_ShiFZX .f-field-checkbox-icon').get_attribute('class')
     # 省
-    ddlSheng = browser.find_element(By.CSS_SELECTOR, '#ctl03_ddlSheng #ctl03_ddlSheng-inputEl').get_attribute('value')
+    ddlSheng = browser.find_element(
+        By.CSS_SELECTOR, '#ctl03_ddlSheng #ctl03_ddlSheng-inputEl').get_attribute('value')
     # 市
-    ddlShi = browser.find_element(By.CSS_SELECTOR, '#ctl03_ddlShi #ctl03_ddlShi-inputEl').get_attribute('value')
+    ddlShi = browser.find_element(
+        By.CSS_SELECTOR, '#ctl03_ddlShi #ctl03_ddlShi-inputEl').get_attribute('value')
     # 县
-    ddlXian = browser.find_element(By.CSS_SELECTOR, '#ctl03_ddlXian #ctl03_ddlXian-inputEl').get_attribute('value')
+    ddlXian = browser.find_element(
+        By.CSS_SELECTOR, '#ctl03_ddlXian #ctl03_ddlXian-inputEl').get_attribute('value')
     # 详细地址
-    XiangXDZ = browser.find_element(By.CSS_SELECTOR, '#ctl03_XiangXDZ #ctl03_XiangXDZ-inputEl').get_attribute('value')
+    XiangXDZ = browser.find_element(
+        By.CSS_SELECTOR, '#ctl03_XiangXDZ #ctl03_XiangXDZ-inputEl').get_attribute('value')
     # 是否家庭地址
-    ShiFZJ = 'f-checked' in browser.find_element(By.CSS_SELECTOR, '#ctl03_ShiFZJ .f-field-checkbox-icon').get_attribute('class')
+    ShiFZJ = 'f-checked' in browser.find_element(
+        By.CSS_SELECTOR, '#ctl03_ShiFZJ .f-field-checkbox-icon').get_attribute('class')
 
     return ShouJHM, ShiFSH, ShiFZX, ddlSheng, ddlShi, ddlXian, XiangXDZ, ShiFZJ
 
@@ -107,8 +128,10 @@ def draw_XingCM(ShouJHM: str, t):
     font1 = ImageFont.truetype('yahei.ttf', 30)
     font2 = ImageFont.truetype('yahei.ttf', 36)
     draw = ImageDraw.Draw(image)
-    draw.text((414, 380), f'{ShouJHM[:3]}****{ShouJHM[-4:]}的动态行程卡', font=font1, fill=(39, 39, 39), anchor='mm')
-    draw.text((414, 460), '更新于：' + t.strftime('%Y-%m-%d %H:%M:%S'), font=font2, fill=(143, 142, 147), anchor='mm')
+    draw.text((414, 380), f'{ShouJHM[:3]}****{ShouJHM[-4:]}的动态行程卡',
+              font=font1, fill=(39, 39, 39), anchor='mm')
+    draw.text((414, 460), '更新于：' + t.strftime('%Y-%m-%d %H:%M:%S'),
+              font=font2, fill=(143, 142, 147), anchor='mm')
     image.save('xingcm_a.jpg', 'jpeg')
 
     return os.path.dirname(os.path.abspath(__file__)) + os.path.sep + 'xingcm_a.jpg'
@@ -118,20 +141,23 @@ def report_day(browser: webdriver.Chrome,
                ShouJHM, ShiFSH, ShiFZX, ddlSheng, ddlShi, ddlXian, XiangXDZ, ShiFZJ,
                t: dt.datetime):
     print(f'正在补报{t.year}-{t.month}-{t.day}')
-    browser.get(f'https://selfreport.shu.edu.cn/DayReport.aspx?day={t.year}-{t.month}-{t.day}')
+    browser.get(
+        f'https://selfreport.shu.edu.cn/DayReport.aspx?day={t.year}-{t.month}-{t.day}')
     time.sleep(1)
 
     print('承诺')
     browser.find_element(By.ID, 'p1_ChengNuo-inputEl-icon').click()
 
-    checkboxes = browser.find_elements(By.CSS_SELECTOR, '#p1_pnlDangSZS .f-field-checkbox-icon')
+    checkboxes = browser.find_elements(
+        By.CSS_SELECTOR, '#p1_pnlDangSZS .f-field-checkbox-icon')
     if len(checkboxes) > 0:  # 有的人没有答题
         print('答题')
         checkboxes[0].click()
 
     print('是否在上海', ShiFSH)
     # 在上海（校内），在上海（不在校内），不在上海
-    checkboxes = browser.find_elements(By.CSS_SELECTOR, '#p1_ShiFSH .f-field-checkbox-icon')
+    checkboxes = browser.find_elements(
+        By.CSS_SELECTOR, '#p1_ShiFSH .f-field-checkbox-icon')
     if ShiFSH == '在上海（不在校内）':
         checkboxes[1].click()
     elif ShiFSH == '不在上海':
@@ -142,34 +168,39 @@ def report_day(browser: webdriver.Chrome,
 
     print('是否住校', ShiFZX)
     try:
-        checkboxes = browser.find_elements(By.CSS_SELECTOR, '#p1_ShiFZX .f-field-checkbox-icon')
+        checkboxes = browser.find_elements(
+            By.CSS_SELECTOR, '#p1_ShiFZX .f-field-checkbox-icon')
         checkboxes[0 if ShiFZX else 1].click()
     except Exception as e:
         print('是否住校提交失败')
 
     print('省市县详细地址', ddlSheng, ddlShi, ddlXian, XiangXDZ[:2])
-    elem = browser.find_element(By.CSS_SELECTOR, "#p1_ddlSheng input[name='p1$ddlSheng$Value']")
+    elem = browser.find_element(
+        By.CSS_SELECTOR, "#p1_ddlSheng input[name='p1$ddlSheng$Value']")
     browser.execute_script('''
         var elem = arguments[0];
         var value = arguments[1];
         elem.value = value;
     ''', elem, ddlSheng)
 
-    elem = browser.find_element(By.CSS_SELECTOR, "#p1_ddlShi input[name='p1$ddlShi$Value']")
+    elem = browser.find_element(
+        By.CSS_SELECTOR, "#p1_ddlShi input[name='p1$ddlShi$Value']")
     browser.execute_script('''
         var elem = arguments[0];
         var value = arguments[1];
         elem.value = value;
     ''', elem, ddlShi)
 
-    elem = browser.find_element(By.CSS_SELECTOR, "#p1_ddlXian input[name='p1$ddlXian$Value']")
+    elem = browser.find_element(
+        By.CSS_SELECTOR, "#p1_ddlXian input[name='p1$ddlXian$Value']")
     browser.execute_script('''
         var elem = arguments[0];
         var value = arguments[1];
         elem.value = value;
     ''', elem, ddlXian)
 
-    elem = browser.find_element(By.CSS_SELECTOR, "#p1_XiangXDZ #p1_XiangXDZ-inputEl")
+    elem = browser.find_element(
+        By.CSS_SELECTOR, "#p1_XiangXDZ #p1_XiangXDZ-inputEl")
     browser.execute_script('''
         var elem = arguments[0];
         var value = arguments[1];
@@ -177,7 +208,8 @@ def report_day(browser: webdriver.Chrome,
     ''', elem, XiangXDZ)
 
     print('是否家庭地址', ShiFZJ)
-    checkboxes = browser.find_elements(By.CSS_SELECTOR, '#p1_ShiFZJ .f-field-checkbox-icon')
+    checkboxes = browser.find_elements(
+        By.CSS_SELECTOR, '#p1_ShiFZJ .f-field-checkbox-icon')
     checkboxes[0 if ShiFZJ else 1].click()
     time.sleep(0.5)
 
@@ -192,7 +224,8 @@ def report_day(browser: webdriver.Chrome,
                 element_has_no_value((By.NAME, 'p1$pImages$fileSuiSM'))
             )
 
-            browser.find_element(By.CSS_SELECTOR, '#p1_pImages_fileSuiSM a.f-btn').click()
+            browser.find_element(
+                By.CSS_SELECTOR, '#p1_pImages_fileSuiSM a.f-btn').click()
             WebDriverWait(browser, 10).until(
                 element_has_value((By.ID, 'p1_pImages_HFimgSuiSM-inputEl'))
             )
@@ -215,7 +248,8 @@ def report_day(browser: webdriver.Chrome,
                 element_has_no_value((By.NAME, 'p1$pImages$fileXingCM'))
             )
 
-            browser.find_element(By.CSS_SELECTOR, '#p1_pImages_fileXingCM a').click()
+            browser.find_element(
+                By.CSS_SELECTOR, '#p1_pImages_fileXingCM a').click()
             WebDriverWait(browser, 10).until(
                 element_has_value((By.ID, 'p1_pImages_HFimgXingCM-inputEl'))
             )
@@ -281,9 +315,10 @@ if __name__ == "__main__":
 
     if 'users' in os.environ:
         for user_password in os.environ['users'].split(';'):
-            user, password = user_password.split(',')
+            user, password, sendkey = user_password.split(',')
             config[user] = {
-                'pwd': password
+                'pwd': password,
+                'sendkey': sendkey
             }
 
     succeeded_users = []
@@ -351,9 +386,20 @@ if __name__ == "__main__":
         if report_result:
             print(f'{now} 每日一报提交成功')
             succeeded_users.append(user_abbr)
+            if config[user]["sendkey"].lower() != "no":
+                try:
+                    serverchan_push(config[user]["sendkey"], f"{now} 每日一报提交成功")
+                except Exception as e:
+                    print(f'{now} Server酱推送失败，{e}')
+
         else:
             print(f'{now} 每日一报提交失败')
             failed_users.append(user_abbr)
+            if config[user]["sendkey"].lower() != "no":
+                try:
+                    serverchan_push(config[user]["sendkey"], f"{now} 每日一报提交失败")
+                except Exception as e:
+                    print(f'{now} Server酱推送失败，{e}')
 
         if i < len(config) - 1:
             time.sleep(RETRY_TIMEOUT)
