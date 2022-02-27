@@ -238,6 +238,8 @@ def report_day(browser: webdriver.Chrome,
                 a.click()
                 break
 
+        print(browser.page_source)
+        
         messagebox = browser.find_element(By.CLASS_NAME, 'f-messagebox')
         if '提交成功' in messagebox.text:
             return True
