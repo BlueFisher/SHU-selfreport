@@ -231,13 +231,15 @@ def report_day(browser: webdriver.Chrome,
     browser.find_element(By.ID, 'p1_ctl02_btnSubmit').click()
     time.sleep(1)
     messagebox = browser.find_element(By.CLASS_NAME, 'f-messagebox')
-
+    print(browser.page_source)
+    
     if '确定' in messagebox.text:
         for a in messagebox.find_elements(By.TAG_NAME, 'a'):
             if a.text == '确定':
                 a.click()
                 break
-
+        time.sleep(5)
+        print("/*-+")
         print(browser.page_source)
         
         messagebox = browser.find_element(By.CLASS_NAME, 'f-messagebox')
