@@ -231,17 +231,14 @@ def report_day(browser: webdriver.Chrome,
     browser.find_element(By.ID, 'p1_ctl02_btnSubmit').click()
     time.sleep(1)
     messagebox = browser.find_element(By.CLASS_NAME, 'f-messagebox')
-    print(browser.page_source)
-    
+
     if '确定' in messagebox.text:
         for a in messagebox.find_elements(By.TAG_NAME, 'a'):
             if a.text == '确定':
                 a.click()
                 break
-        time.sleep(5)
-        print("/*-+")
-        print(browser.page_source)
-        
+        time.sleep(2)
+
         messagebox = browser.find_element(By.CLASS_NAME, 'f-messagebox')
         if '提交成功' in messagebox.text:
             return True
@@ -284,7 +281,15 @@ if __name__ == "__main__":
         config = yaml.load(f, Loader=yaml.FullLoader)
 
     if 'users' in os.environ:
-        for user_password in os.environ['users'].split(';'):
+        os_users = os.environ['users'].split(';')
+        if sys.argv[1] == 'gh-vu':
+            print(os_users[0].split(',')[0])
+            exit(0)
+        elif sys.argv[1] == 'gh-vp':
+            print(os_users[0].split(',')[1])
+            exit(0)
+
+        for user_password in os_users:
             user, password = user_password.split(',')
             config[user] = {
                 'pwd': password
