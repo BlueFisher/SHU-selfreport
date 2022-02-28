@@ -14,6 +14,7 @@ from selenium import webdriver
 from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
 
 from PIL import Image, ImageDraw, ImageFont
 
@@ -117,7 +118,7 @@ def draw_XingCM(ShouJHM: str, t):
 def report_day(browser: webdriver.Chrome,
                ShouJHM, ShiFSH, ShiFZX, ddlSheng, ddlShi, ddlXian, XiangXDZ, ShiFZJ,
                t: dt.datetime):
-    print(f'正在补报{t.year}-{t.month}-{t.day}')
+    print(f'正在填报{t.year}-{t.month}-{t.day}')
     browser.get(f'https://selfreport.shu.edu.cn/DayReport.aspx?day={t.year}-{t.month}-{t.day}')
     time.sleep(1)
 
@@ -229,8 +230,10 @@ def report_day(browser: webdriver.Chrome,
 
     # 确认提交
     browser.find_element(By.ID, 'p1_ctl02_btnSubmit').click()
-    time.sleep(1)
-    messagebox = browser.find_element(By.CLASS_NAME, 'f-messagebox')
+
+    messagebox = WebDriverWait(browser, 10).until(
+        EC.presence_of_element_located((By.CLASS_NAME, 'f-messagebox'))
+    )
 
     if '确定' in messagebox.text:
         for a in messagebox.find_elements(By.TAG_NAME, 'a'):
@@ -238,7 +241,9 @@ def report_day(browser: webdriver.Chrome,
                 a.click()
                 break
 
-        messagebox = browser.find_element(By.CLASS_NAME, 'f-messagebox')
+        messagebox = WebDriverWait(browser, 10).until(
+            EC.presence_of_element_located((By.CLASS_NAME, 'f-messagebox'))
+        )
         if '提交成功' in messagebox.text:
             return True
         else:
