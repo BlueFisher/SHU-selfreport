@@ -55,6 +55,7 @@ jobs:
         run: until ping -c1 xk.autoisp.shu.edu.cn; do sleep 2; done
 
       - name: Report
+        if: always()
         env:
           users: ${{ secrets.USERS }}
         run: "python -u main.py"
