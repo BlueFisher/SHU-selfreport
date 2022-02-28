@@ -282,12 +282,13 @@ if __name__ == "__main__":
 
     if 'users' in os.environ:
         os_users = os.environ['users'].split(';')
-        if sys.argv[1] == 'gh-vu':
-            print(os_users[0].split(',')[0])
-            exit(0)
-        elif sys.argv[1] == 'gh-vp':
-            print(os_users[0].split(',')[1])
-            exit(0)
+        if len(sys.argv) == 2:
+            if sys.argv[1] == 'gh-vu':
+                print(os_users[0].split(',')[0])
+                exit(0)
+            elif sys.argv[1] == 'gh-vp':
+                print(os_users[0].split(',')[1])
+                exit(0)
 
         for user_password in os_users:
             user, password = user_password.split(',')

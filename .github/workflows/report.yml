@@ -38,6 +38,8 @@ jobs:
         run: |
           sudo apt update
           sudo apt install -y openvpn openvpn-systemd-resolved
+          echo "::add-mask::$(python main.py gh-vu)"
+          echo "::add-mask::$(python main.py gh-vp)"
           echo "ovpn_username=$(python main.py gh-vu)" >> $GITHUB_ENV
           echo "ovpn_password=$(python main.py gh-vp)" >> $GITHUB_ENV
 
