@@ -11,6 +11,7 @@ jobs:
 
     steps:
       - uses: actions/checkout@v2
+
       - name: Set up chromedriver
         uses: nanasess/setup-chromedriver@v1
         with:
@@ -30,7 +31,31 @@ jobs:
         run: |
           python -m pip install --upgrade pip
           pip install -r requirements.txt
+
+      - name: Configure OpenVPN
+        env:
+          users: ${{ secrets.USERS }}
+        run: |
+          sudo apt update
+          sudo apt install -y openvpn openvpn-systemd-resolved
+          echo "::add-mask::$(python main.py gh-vu)"
+          echo "::add-mask::$(python main.py gh-vp)"
+          echo "ovpn_username=$(python main.py gh-vu)" >> $GITHUB_ENV
+          echo "ovpn_password=$(python main.py gh-vp)" >> $GITHUB_ENV
+
+      - name: Connect to VPN
+        uses: "kota65535/github-openvpn-connect-action@v1"
+        with:
+          config_file: .github/vpn/config.ovpn
+          username: ${{ env.ovpn_username }}
+          password: ${{ env.ovpn_password }}
+
+      - name: Test a VPN connection
+        timeout-minutes: 1
+        run: until ping -c1 xk.autoisp.shu.edu.cn; do sleep 2; done
+
       - name: Report
+        if: always()
         env:
           users: ${{ secrets.USERS }}
         run: "python -u main.py"
