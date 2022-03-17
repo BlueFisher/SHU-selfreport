@@ -12,13 +12,6 @@ jobs:
     steps:
       - uses: actions/checkout@v2
 
-      - name: Set up chromedriver
-        uses: nanasess/setup-chromedriver@v1
-      - run: |
-          export DISPLAY=:99
-          chromedriver --url-base=/wd/hub &
-          sudo Xvfb -ac :99 -screen 0 1280x1024x24 > /dev/null 2>&1 & # optional
-
       - name: Set up Python 3.8
         uses: actions/setup-python@v2
         with:
