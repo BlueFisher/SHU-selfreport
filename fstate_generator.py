@@ -124,7 +124,7 @@ def _draw_XingCM(ShouJHM: str, t):
     draw.text((414, 460), '更新于：' + t.strftime('%Y-%m-%d %H:%M:%S'), font=font2, fill=(143, 142, 147), anchor='mm')
     image.save('xingcm_a.jpg', 'jpeg')
 
-    return os.path.dirname(os.path.abspath(__file__)) + os.path.sep + 'xingcm_a.jpg'
+    return 'xingcm_a.jpg'
 
 
 def upload_img(sess, view_state, is_SuiSM, ShouJHM, t):
