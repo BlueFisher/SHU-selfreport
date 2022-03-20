@@ -1,9 +1,8 @@
 import base64
 import datetime as dt
 import json
-import os
 import re
-import sys
+from pathlib import Path
 
 from bs4 import BeautifulSoup
 from PIL import Image, ImageDraw, ImageFont
@@ -15,15 +14,16 @@ def _generate_fstate_base64(fstate):
     return base64.b64encode(fstate_bytes).decode()
 
 
-def generate_fstate_day(BaoSRQ, ShiFSH, ShiFZX,
+def generate_fstate_day(BaoSRQ, ShiFSH, ShiFZX, XiaoQu,
                         ddlSheng, ddlShi, ddlXian, XiangXDZ, ShiFZJ,
                         SuiSM, XingCM):
-    with open(os.path.abspath(os.path.dirname(sys.argv[0])) + '/fstate_day.json', encoding='utf8') as f:
+    with open(Path(__file__).resolve().parent.joinpath('fstate_day.json'), encoding='utf8') as f:
         fstate = json.loads(f.read())
 
     fstate['p1_BaoSRQ']['Text'] = BaoSRQ
     fstate['p1_ShiFSH']['SelectedValue'] = ShiFSH
     fstate['p1_ShiFZX']['SelectedValue'] = ShiFZX
+    fstate['p1_XiaoQu']['SelectedValue'] = XiaoQu
     fstate['p1_ddlSheng']['F_Items'] = [[ddlSheng, ddlSheng, 1, '', '']]
     fstate['p1_ddlSheng']['SelectedValueArray'] = [ddlSheng]
     fstate['p1_ddlShi']['F_Items'] = [[ddlShi, ddlShi, 1, '', '']]
@@ -68,6 +68,7 @@ def get_last_report(sess, t):
     print('#正在获取前一天的填报信息...')
     ShiFSH = '在上海（校内）'
     ShiFZX = '是'
+    XiaoQu = '宝山'
     ddlSheng = '上海'
     ddlShi = '上海市'
     ddlXian = '宝山区'
@@ -88,6 +89,10 @@ def get_last_report(sess, t):
                 print('-ShiFZX-')
                 ShiFZX = _html_to_json(htmls[i - 1])['SelectedValue']
                 print(ShiFZX)
+            if 'XiaoQu' in h:
+                print('-XiaoQu-')
+                XiaoQu = _html_to_json(htmls[i - 1])['SelectedValue']
+                print(XiaoQu)
             if 'ddlSheng' in h:
                 print('-ddlSheng-')
                 ddlSheng = _html_to_json(htmls[i - 1])['SelectedValueArray'][0]
@@ -109,9 +114,9 @@ def get_last_report(sess, t):
                 ShiFZJ = _html_to_json(htmls[i - 1])['SelectedValue']
                 print(ShiFZJ)
         except:
-            print('获取前一天日报有错误', htmls[i - 1])
+            print('获取前一天日报有错误', htmls[i - 1], htmls[i])
 
-    return ShiFSH, ShiFZX, ddlSheng, ddlShi, ddlXian, XiangXDZ, ShiFZJ
+    return ShiFSH, ShiFZX, XiaoQu, ddlSheng, ddlShi, ddlXian, XiangXDZ, ShiFZJ
 
 
 def _draw_XingCM(ShouJHM: str, t):
@@ -122,9 +127,10 @@ def _draw_XingCM(ShouJHM: str, t):
     draw = ImageDraw.Draw(image)
     draw.text((414, 380), f'{ShouJHM[:3]}****{ShouJHM[-4:]}的动态行程卡', font=font1, fill=(39, 39, 39), anchor='mm')
     draw.text((414, 460), '更新于：' + t.strftime('%Y-%m-%d %H:%M:%S'), font=font2, fill=(143, 142, 147), anchor='mm')
-    image.save('xingcm_a.jpg', 'jpeg')
+    img_path = str(Path(__file__).resolve().parent.joinpath('xingcm_a.jpg'))
+    image.save(img_path, 'jpeg')
 
-    return 'xingcm_a.jpg'
+    return img_path
 
 
 def upload_img(sess, view_state, is_SuiSM, ShouJHM, t):

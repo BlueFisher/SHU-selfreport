@@ -67,13 +67,14 @@ def report_day(sess, t):
 
     BaoSRQ = t.strftime('%Y-%m-%d')
     ShouJHM = get_ShouJHM(sess)
-    ShiFSH, ShiFZX, ddlSheng, ddlShi, ddlXian, XiangXDZ, ShiFZJ = get_last_report(sess, t)
+    ShiFSH, ShiFZX, XiaoQu, ddlSheng, ddlShi, ddlXian, XiangXDZ, ShiFZJ = get_last_report(sess, t)
     SuiSM, XingCM = get_img_value(sess, ShouJHM, t)
 
     print('#信息获取完成#')
     print(f'是否在上海：{ShiFSH}')
     print(f'是否在校：{ShiFZX}')
-    print(ddlSheng, ddlShi, ddlXian, f'###{XiangXDZ[-2:]}')
+    print(f'校区：{XiaoQu}')
+    print(ddlSheng, ddlShi, ddlXian, f'***{XiangXDZ[-2:]}')
     print(f'是否为家庭地址：{ShiFZJ}')
     print(f'随申码：{SuiSM}')
     print(f'行程码：{XingCM}')
@@ -86,10 +87,12 @@ def report_day(sess, t):
                 "__VIEWSTATE": view_state,
                 "__VIEWSTATEGENERATOR": "7AD7E509",
                 "p1$ChengNuo": "p1_ChengNuo",
-                "p1$pnlDangSZS$DangSZS": "A",
                 "p1$BaoSRQ": BaoSRQ,
                 "p1$DangQSTZK": "良好",
                 "p1$TiWen": "",
+                "p1$ShiFSH": ShiFSH,
+                "p1$ShiFZX": ShiFZX,
+                "p1$XiaoQu": XiaoQu,
                 "p1$pImages$HFimgSuiSM": SuiSM,
                 "p1$pImages$HFimgXingCM": XingCM,
                 "p1$JiuYe_ShouJHM": "",
@@ -101,8 +104,6 @@ def report_day(sess, t):
                 "p1$GuoNei": "国内",
                 "p1$ddlGuoJia$Value": "-1",
                 "p1$ddlGuoJia": "选择国家",
-                "p1$ShiFSH": ShiFSH,
-                "p1$ShiFZX": ShiFZX,
                 "p1$ddlSheng$Value": ddlSheng,
                 "p1$ddlSheng": ddlSheng,
                 "p1$ddlShi$Value": ddlShi,
@@ -140,7 +141,7 @@ def report_day(sess, t):
                 "p1_ContentPanel1_Collapsed": "true",
                 "p1_GeLSM_Collapsed": "false",
                 "p1_Collapsed": "false",
-                "F_STATE": generate_fstate_day(BaoSRQ, ShiFSH, ShiFZX,
+                "F_STATE": generate_fstate_day(BaoSRQ, ShiFSH, ShiFZX, XiaoQu,
                                                ddlSheng, ddlShi, ddlXian, XiangXDZ, ShiFZJ,
                                                SuiSM, XingCM)
             }, headers={
