@@ -148,6 +148,18 @@ def report_day(browser: webdriver.Chrome,
     except Exception as e:
         print('是否住校提交失败')
 
+    if(ShiFZX):
+        try:
+            checkboxes = browser.find_elements(By.CSS_SELECTOR, '#p1_XiaoQu .f-field-checkbox-icon')
+            if('宝山' in ddlXian):
+                checkboxes[0].click()
+            elif('静安' in ddlXian):
+                checkboxes[1].click()
+            elif('嘉定' in ddlXian):
+                checkboxes[2].click()
+        except Exception as e:
+            print('所在校区提交失败 {}')
+
     print('省市县详细地址', ddlSheng, ddlShi, ddlXian, XiangXDZ[:2])
     elem = browser.find_element(By.CSS_SELECTOR, "#p1_ddlSheng input[name='p1$ddlSheng$Value']")
     browser.execute_script('''
