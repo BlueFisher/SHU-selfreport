@@ -91,7 +91,7 @@ def get_last_report(sess, t):
                 print(ShiFZX)
             if 'XiaoQu' in h:
                 print('-XiaoQu-')
-                XiaoQu = _html_to_json(htmls[i - 1])['SelectedValue']
+                XiaoQu = _html_to_json(htmls[i - 1])['Text']
                 print(XiaoQu)
             if 'ddlSheng' in h:
                 print('-ddlSheng-')
