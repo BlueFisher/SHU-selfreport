@@ -136,7 +136,7 @@ def _draw_XingCM(ShouJHM: str, t):
 def upload_img(sess, view_state, is_SuiSM, ShouJHM, t):
     img_path = _draw_XingCM(ShouJHM, t)
 
-    target = 'p1$pImages$fileSuiSM' if is_SuiSM else 'p1$pImages$fileXingCM'
+    target = 'p1$P_GuoNei$pImages$fileSuiSM' if is_SuiSM else 'p1$P_GuoNei$pImages$fileXingCM'
     with open(img_path, 'rb') as f:
         r = sess.post('https://selfreport.shu.edu.cn/DayReport.aspx', data={
             '__EVENTTARGET': target,
@@ -170,7 +170,7 @@ def get_img_value(sess, ShouJHM, t):
     ret = re.findall(r'^.*//\]', r.text, re.MULTILINE)[0]
     htmls = ret.split(';var ')
     for i, h in enumerate(htmls):
-        if 'p1_pImages_HFimgSuiSM' in h:
+        if 'p1_P_GuoNei_pImages_fileSuiSM' in h:
             try:
                 SuiSM = _html_to_json(htmls[i - 1])['Text']
             except:
@@ -181,7 +181,7 @@ def get_img_value(sess, ShouJHM, t):
                 else:
                     SuiSM = code
 
-        if 'p1$pImages$HFimgXingCM' in h:
+        if 'p1_P_GuoNei_pImages_fileXingCM' in h:
             try:
                 XingCM = _html_to_json(htmls[i - 1])['Text']
             except:
