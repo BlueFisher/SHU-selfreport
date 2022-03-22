@@ -84,6 +84,8 @@ def get_last_report(browser: webdriver.Chrome, t):
     browser.get(f'https://selfreport.shu.edu.cn/ViewDayReport.aspx?day={t.year}-{t.month}-{t.day}')
     time.sleep(1)
 
+    # 是否在国内
+    GuoNei = 'f-checked' in browser.find_element(By.CSS_SELECTOR,'#ctl03_GuoNei .f-field-checkbox-switch').get_attribute('class')
     # 是否在上海，在上海（校内），在上海（不在校内），不在上海
     ShiFSH = browser.find_element(By.CSS_SELECTOR, '#ctl03_ShiFSH #ctl03_ShiFSH-inputEl').text
     # 是否住校
@@ -99,7 +101,7 @@ def get_last_report(browser: webdriver.Chrome, t):
     # 是否家庭地址
     ShiFZJ = 'f-checked' in browser.find_element(By.CSS_SELECTOR, '#ctl03_ShiFZJ .f-field-checkbox-icon').get_attribute('class')
 
-    return ShouJHM, ShiFSH, ShiFZX, ddlSheng, ddlShi, ddlXian, XiangXDZ, ShiFZJ
+    return ShouJHM, GuoNei, ShiFSH, ShiFZX, ddlSheng, ddlShi, ddlXian, XiangXDZ, ShiFZJ
 
 
 def draw_XingCM(ShouJHM: str, t):
@@ -116,7 +118,7 @@ def draw_XingCM(ShouJHM: str, t):
 
 
 def report_day(browser: webdriver.Chrome,
-               ShouJHM, ShiFSH, ShiFZX, ddlSheng, ddlShi, ddlXian, XiangXDZ, ShiFZJ,
+               ShouJHM, GuoNei, ShiFSH, ShiFZX, ddlSheng, ddlShi, ddlXian, XiangXDZ, ShiFZJ,
                t: dt.datetime):
     print(f'正在填报{t.year}-{t.month}-{t.day}')
     browser.get(f'https://selfreport.shu.edu.cn/DayReport.aspx?day={t.year}-{t.month}-{t.day}')
@@ -129,6 +131,13 @@ def report_day(browser: webdriver.Chrome,
     if len(checkboxes) > 0:  # 有的人没有答题
         print('答题')
         checkboxes[0].click()
+
+    print('是否在国内', GuoNei)
+    try:
+        checkboxes = browser.find_elements(By.CSS_SELECTOR, '#p1_GuoNei .f-field-checkbox-icon')
+        checkboxes[0 if ShiFZX else 1].click()
+    except Exception as e:
+        print('是否在国内提交失败')
 
     print('是否在上海', ShiFSH)
     # 在上海（校内），在上海（不在校内），不在上海
@@ -200,18 +209,18 @@ def report_day(browser: webdriver.Chrome,
     # 随申码
     try:
         if ShiFSH != '在上海（校内）':
-            SuiSM = browser.find_element(By.ID, 'p1_pImages_HFimgSuiSM-inputEl')
+            SuiSM = browser.find_element(By.ID, 'p1_P_GuoNei_pImages_HFimgSuiSM-inputEl')
             if SuiSM.get_attribute('value') == '':
                 print('未检测到已提交随申码')
-                upload = browser.find_element(By.NAME, 'p1$pImages$fileSuiSM')
+                upload = browser.find_element(By.NAME, 'p1$P_GuoNei$pImages$fileSuiSM')
                 upload.send_keys(draw_XingCM(ShouJHM, t))
                 WebDriverWait(browser, 10).until(
-                    element_has_no_value((By.NAME, 'p1$pImages$fileSuiSM'))
+                    element_has_no_value((By.NAME, 'p1$P_GuoNei$pImages$fileSuiSM'))
                 )
 
-                browser.find_element(By.CSS_SELECTOR, '#p1_pImages_fileSuiSM a.f-btn').click()
+                browser.find_element(By.CSS_SELECTOR, '#p1_P_GuoNei_pImages_fileSuiSM a.f-btn').click()
                 WebDriverWait(browser, 10).until(
-                    element_has_value((By.ID, 'p1_pImages_HFimgSuiSM-inputEl'))
+                    element_has_value((By.ID, 'p1_P_GuoNei_pImages_HFimgSuiSM-inputEl'))
                 )
 
                 print(SuiSM.get_attribute('value'))
@@ -224,18 +233,18 @@ def report_day(browser: webdriver.Chrome,
     # 行程码
     try:
         if ShiFSH != '在上海（校内）':
-            XingCM = browser.find_element(By.ID, 'p1_pImages_HFimgXingCM-inputEl')
+            XingCM = browser.find_element(By.ID, 'p1_P_GuoNei_pImages_HFimgXingCM-inputEl')
             if XingCM.get_attribute('value') == '':
                 print('未检测到已提交行程码')
-                upload = browser.find_element(By.NAME, 'p1$pImages$fileXingCM')
+                upload = browser.find_element(By.NAME, 'p1$P_GuoNei$pImages$fileXingCM')
                 upload.send_keys(draw_XingCM(ShouJHM, t))
                 WebDriverWait(browser, 10).until(
-                    element_has_no_value((By.NAME, 'p1$pImages$fileXingCM'))
+                    element_has_no_value((By.NAME, 'p1$P_GuoNei$pImages$fileXingCM'))
                 )
 
-                browser.find_element(By.CSS_SELECTOR, '#p1_pImages_fileXingCM a').click()
+                browser.find_element(By.CSS_SELECTOR, '#p1_P_GuoNei_pImages_fileXingCM a.f-btn').click()
                 WebDriverWait(browser, 10).until(
-                    element_has_value((By.ID, 'p1_pImages_HFimgXingCM-inputEl'))
+                    element_has_value((By.ID, 'p1_P_GuoNei_pImages_HFimgXingCM-inputEl'))
                 )
 
                 print(XingCM.get_attribute('value'))
