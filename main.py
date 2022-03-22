@@ -132,33 +132,36 @@ def report_day(browser: webdriver.Chrome,
 
     print('是否在上海', ShiFSH)
     # 在上海（校内），在上海（不在校内），不在上海
-    checkboxes = browser.find_elements(By.CSS_SELECTOR, '#p1_ShiFSH .f-field-checkbox-icon')
-    if ShiFSH == '在上海（不在校内）':
+    checkboxes = browser.find_elements(By.CSS_SELECTOR, '#p1_P_GuoNei_ShiFSH .f-field-checkbox-icon')
+    if ShiFSH == '在上海（校内）':
+        checkboxes[0].click()
+    elif ShiFSH == '在上海（不在校内）':
         checkboxes[1].click()
     elif ShiFSH == '不在上海':
         checkboxes[2].click()
-    else:
-        checkboxes[0].click()
     time.sleep(1)
 
     print('是否住校', ShiFZX)
     try:
-        checkboxes = browser.find_elements(By.CSS_SELECTOR, '#p1_ShiFZX .f-field-checkbox-icon')
+        checkboxes = browser.find_elements(By.CSS_SELECTOR, '#p1_P_GuoNei_ShiFZX .f-field-checkbox-icon')
         checkboxes[0 if ShiFZX else 1].click()
     except Exception as e:
         print('是否住校提交失败')
 
     if(ShiFZX):
         try:
-            checkboxes = browser.find_elements(By.CSS_SELECTOR, '#p1_XiaoQu .f-field-checkbox-icon')
+            checkboxes = browser.find_elements(By.CSS_SELECTOR, '#p1_P_GuoNei_XiaoQu .f-field-checkbox-icon')
             if('宝山' in ddlXian):
+                print("所在校区 宝山")
                 checkboxes[0].click()
             elif('静安' in ddlXian):
+                print("所在校区 延长")
                 checkboxes[1].click()
             elif('嘉定' in ddlXian):
+                print("所在校区 嘉定")
                 checkboxes[2].click()
         except Exception as e:
-            print('所在校区提交失败 {}')
+            print('所在校区提交失败')
 
     print('省市县详细地址', ddlSheng, ddlShi, ddlXian, XiangXDZ[:2])
     elem = browser.find_element(By.CSS_SELECTOR, "#p1_ddlSheng input[name='p1$ddlSheng$Value']")
@@ -196,52 +199,54 @@ def report_day(browser: webdriver.Chrome,
 
     # 随申码
     try:
-        SuiSM = browser.find_element(By.ID, 'p1_pImages_HFimgSuiSM-inputEl')
-        if SuiSM.get_attribute('value') == '':
-            print('未检测到已提交随申码')
-            upload = browser.find_element(By.NAME, 'p1$pImages$fileSuiSM')
-            upload.send_keys(draw_XingCM(ShouJHM, t))
-            WebDriverWait(browser, 10).until(
-                element_has_no_value((By.NAME, 'p1$pImages$fileSuiSM'))
-            )
+        if ShiFSH != '在上海（校内）':
+            SuiSM = browser.find_element(By.ID, 'p1_pImages_HFimgSuiSM-inputEl')
+            if SuiSM.get_attribute('value') == '':
+                print('未检测到已提交随申码')
+                upload = browser.find_element(By.NAME, 'p1$pImages$fileSuiSM')
+                upload.send_keys(draw_XingCM(ShouJHM, t))
+                WebDriverWait(browser, 10).until(
+                    element_has_no_value((By.NAME, 'p1$pImages$fileSuiSM'))
+                )
 
-            browser.find_element(By.CSS_SELECTOR, '#p1_pImages_fileSuiSM a.f-btn').click()
-            WebDriverWait(browser, 10).until(
-                element_has_value((By.ID, 'p1_pImages_HFimgSuiSM-inputEl'))
-            )
+                browser.find_element(By.CSS_SELECTOR, '#p1_pImages_fileSuiSM a.f-btn').click()
+                WebDriverWait(browser, 10).until(
+                    element_has_value((By.ID, 'p1_pImages_HFimgSuiSM-inputEl'))
+                )
 
-            print(SuiSM.get_attribute('value'))
-        else:
-            print(f'已提交随申码')
+                print(SuiSM.get_attribute('value'))
+            else:
+                print(f'已提交随申码')
     except Exception as e:
         print(e)
         print('随申码提交失败')
 
     # 行程码
     try:
-        XingCM = browser.find_element(By.ID, 'p1_pImages_HFimgXingCM-inputEl')
-        if XingCM.get_attribute('value') == '':
-            print('未检测到已提交行程码')
-            upload = browser.find_element(By.NAME, 'p1$pImages$fileXingCM')
-            upload.send_keys(draw_XingCM(ShouJHM, t))
-            WebDriverWait(browser, 10).until(
-                element_has_no_value((By.NAME, 'p1$pImages$fileXingCM'))
-            )
+        if ShiFSH != '在上海（校内）':
+            XingCM = browser.find_element(By.ID, 'p1_pImages_HFimgXingCM-inputEl')
+            if XingCM.get_attribute('value') == '':
+                print('未检测到已提交行程码')
+                upload = browser.find_element(By.NAME, 'p1$pImages$fileXingCM')
+                upload.send_keys(draw_XingCM(ShouJHM, t))
+                WebDriverWait(browser, 10).until(
+                    element_has_no_value((By.NAME, 'p1$pImages$fileXingCM'))
+                )
 
-            browser.find_element(By.CSS_SELECTOR, '#p1_pImages_fileXingCM a').click()
-            WebDriverWait(browser, 10).until(
-                element_has_value((By.ID, 'p1_pImages_HFimgXingCM-inputEl'))
-            )
+                browser.find_element(By.CSS_SELECTOR, '#p1_pImages_fileXingCM a').click()
+                WebDriverWait(browser, 10).until(
+                    element_has_value((By.ID, 'p1_pImages_HFimgXingCM-inputEl'))
+                )
 
-            print(XingCM.get_attribute('value'))
-        else:
-            print(f'已提交行程码')
+                print(XingCM.get_attribute('value'))
+            else:
+                print(f'已提交行程码')
     except Exception as e:
         print(e)
         print('行程码提交失败')
 
     # 确认提交
-    browser.find_element(By.ID, 'p1_ctl02_btnSubmit').click()
+    browser.find_element(By.ID, 'p1_ctl01_btnSubmit').click()
 
     messagebox = WebDriverWait(browser, 10).until(
         EC.presence_of_element_located((By.CLASS_NAME, 'f-messagebox'))
