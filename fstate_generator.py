@@ -21,9 +21,9 @@ def generate_fstate_day(BaoSRQ, ShiFSH, ShiFZX, XiaoQu,
         fstate = json.loads(f.read())
 
     fstate['p1_BaoSRQ']['Text'] = BaoSRQ
-    fstate['p1_ShiFSH']['SelectedValue'] = ShiFSH
-    fstate['p1_ShiFZX']['SelectedValue'] = ShiFZX
-    fstate['p1_XiaoQu']['SelectedValue'] = XiaoQu
+    fstate['p1_P_GuoNei_ShiFSH']['SelectedValue'] = ShiFSH
+    fstate['p1_P_GuoNei_ShiFZX']['SelectedValue'] = ShiFZX
+    fstate['p1_P_GuoNei_XiaoQu']['SelectedValue'] = XiaoQu
     fstate['p1_ddlSheng']['F_Items'] = [[ddlSheng, ddlSheng, 1, '', '']]
     fstate['p1_ddlSheng']['SelectedValueArray'] = [ddlSheng]
     fstate['p1_ddlShi']['F_Items'] = [[ddlShi, ddlShi, 1, '', '']]
@@ -32,8 +32,8 @@ def generate_fstate_day(BaoSRQ, ShiFSH, ShiFZX, XiaoQu,
     fstate['p1_ddlXian']['SelectedValueArray'] = [ddlXian]
     fstate['p1_XiangXDZ']['Text'] = XiangXDZ
     fstate['p1_ShiFZJ']['SelectedValue'] = ShiFZJ
-    fstate['p1_pImages_HFimgSuiSM']['Text'] = SuiSM
-    fstate['p1_pImages_HFimgXingCM']['Text'] = XingCM
+    fstate['p1_P_GuoNei_pImages_HFimgSuiSM']['Text'] = SuiSM
+    fstate['p1_P_GuoNei_pImages_HFimgXingCM']['Text'] = XingCM
 
     fstate_base64 = _generate_fstate_base64(fstate)
     t = len(fstate_base64) // 2
