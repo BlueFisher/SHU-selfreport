@@ -63,7 +63,7 @@
 
 5. 定位到你仓库下的 `Actions` 选项卡中的 `Auto Report`，点击 `Disable workflow`，该选项卡会根据你自己fork的代码自动填报，如果主仓库更新，则无法及时使用新代码。
 
-![](images/enable_workflow.png)
+![](images/disable_workflow.png)
 
 ***由于 `Auto Report from Remote` 与 `Auto Report` 都会登录 OpenVpn 导致冲突，所以同一时间只能启动一个 workflow，建议取消 `Auto Report`，开启 `Auto Report from Remote`。***
 
