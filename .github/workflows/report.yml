@@ -2,7 +2,7 @@ name: Auto Report
 
 on:
   schedule:
-    - cron: "0 21,8 * * *"
+    - cron: "0 19 * * *"
   workflow_dispatch:
 
 jobs:

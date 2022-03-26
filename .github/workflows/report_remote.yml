@@ -2,7 +2,7 @@ name: Auto Report from Remote
 
 on:
   schedule:
-    - cron: "0 21,8 * * *"
+    - cron: "0 20 * * *"
   workflow_dispatch:
 
 jobs:

@@ -1,5 +1,6 @@
 import zipfile
 import os
+import sys
 
 
 def unzip_file(zip_src, dst_dir):
@@ -15,4 +16,4 @@ def unzip_file(zip_src, dst_dir):
 if __name__ == '__main__':
     unzip_file('remote.zip', '')
 
-    exit(os.system('python -u SHU-selfreport-master/main.py'))
+    sys.exit(os.system('python -u SHU-selfreport-master/main.py'))
