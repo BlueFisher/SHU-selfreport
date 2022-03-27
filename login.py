@@ -27,7 +27,7 @@ def login(username, password):
     sess = requests.Session()
     for _ in range(RETRY):
         try:
-            r = sess.get('https://selfreport.shu.edu.cn/Default.aspx')
+            r = sess.get('https://selfreport.shu.edu.cn/Default.aspx', timeout=5)
             code = r.url.split('/')[-1]
             url_param = eval(base64.b64decode(code).decode("utf-8"))
             state = url_param['state']

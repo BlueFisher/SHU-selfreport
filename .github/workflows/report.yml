@@ -33,19 +33,24 @@ jobs:
 
       - name: Connect and Test OpenVPN Connection
         if: always()
-        run: sudo ./ovpn.sh
+        run: if [[ $disable_openvpn != true ]] ; then sudo ./ovpn.sh ; fi
+        env:
+          disable_openvpn: ${{ secrets.DISABLE_OPENVPN }}
 
       - name: Report
         if: always()
         env:
           users: ${{ secrets.USERS }}
+          https_proxy: ${{ secrets.HTTPS_PROXY }}
         run: "python -u main.py"
 
       - name: Kill OpenVPN Connection
         if: always()
         run: |
           sudo chmod 777 vpn.log
-          sudo killall openvpn
+          if [[ $disable_openvpn != true ]] ; then sudo killall openvpn ; fi
+        env:
+          disable_openvpn: ${{ secrets.DISABLE_OPENVPN }}
 
       - name: Upload VPN logs
         uses: actions/upload-artifact@v2
