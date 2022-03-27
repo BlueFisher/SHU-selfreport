@@ -45,7 +45,7 @@ jobs:
         if: always()
         env:
           users: ${{ secrets.USERS }}
-          https_proxy: ${{ scerets.HTTPS_PROXY }}
+          https_proxy: ${{ secrets.HTTPS_PROXY }}
         run: "python -u run_remote.py"
 
       - name: Kill OpenVPN Connection
