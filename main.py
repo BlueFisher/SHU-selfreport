@@ -195,13 +195,6 @@ if __name__ == "__main__":
     if 'users' in os.environ:
         for user_password in os.environ['users'].split(';'):
             user, password = user_password.split(',')
-            if len(sys.argv) == 2:
-                if sys.argv[1] == 'gh-vu':
-                    print(user)
-                    exit(0)
-                elif sys.argv[1] == 'gh-vp':
-                    print(password)
-                    exit(0)
             config[user] = {
                 'pwd': password
             }
