@@ -212,12 +212,12 @@ if __name__ == "__main__":
 
         if sess:
             print('登录成功')
-            fake_ip = '59.79.' + '.'.join(str(random.randint(0, 255)) for _ in range(2))
-            print('生成了随机IP: %s' % fake_ip)
-            headers = {
-                'X-Forwarded-For': fake_ip,
-            }
-            sess.headers.update(headers)
+            # fake_ip = '59.79.' + '.'.join(str(random.randint(0, 255)) for _ in range(2))
+            # print('生成了随机IP: %s' % fake_ip)
+            # headers = {
+            #     'X-Forwarded-For': fake_ip,
+            # }
+            # sess.headers.update(headers)
 
             # notice(sess)
             view_messages(sess)
