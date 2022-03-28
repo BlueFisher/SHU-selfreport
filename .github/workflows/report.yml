@@ -22,9 +22,19 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r requirements.txt
 
+      - name: Pull Remote
+        env:
+          PULL_REMOTE: ${{ secrets.PULL_REMOTE }}
+        if: env.PULL_REMOTE != ''
+        run: |
+          wget -O remote.zip https://github.com/BlueFisher/SHU-selfreport/archive/refs/heads/master.zip
+          unzip remote.zip
+
       - name: Configure OpenVPN
         env:
-          users: ${{ secrets.USERS }}
+          USERS: ${{ secrets.USERS }}
+          HTTPS_PROXY: ${{ secrets.HTTPS_PROXY }}
+        if: env.HTTPS_PROXY == ''
         run: |
           sudo apt update
           sudo apt-get --assume-yes --no-install-recommends install openvpn
@@ -32,29 +42,39 @@ jobs:
           touch vpn.log
 
       - name: Connect and Test OpenVPN Connection
-        if: always()
-        run: if [[ $disable_openvpn != true ]] ; then sudo ./ovpn.sh ; fi
         env:
-          disable_openvpn: ${{ secrets.DISABLE_OPENVPN }}
+          HTTPS_PROXY: ${{ secrets.HTTPS_PROXY }}
+        if: env.HTTPS_PROXY == ''
+        run: sudo ./ovpn.sh
 
       - name: Report
         if: always()
         env:
-          users: ${{ secrets.USERS }}
-          https_proxy: ${{ secrets.HTTPS_PROXY }}
-        run: "python -u main.py"
+          USERS: ${{ secrets.USERS }}
+          HTTPS_PROXY: ${{ secrets.HTTPS_PROXY }}
+          PULL_REMOTE: ${{ secrets.PULL_REMOTE }}
+        run: |
+          if [[ $PULL_REMOTE != '' ]]; then
+            echo "Report from remote";
+            python -u SHU-selfreport-master/main.py;
+          else
+            echo "Report from local";
+            python -u main.py;
+          fi
 
       - name: Kill OpenVPN Connection
-        if: always()
+        env:
+          HTTPS_PROXY: ${{ secrets.HTTPS_PROXY }}
+        if: env.HTTPS_PROXY == ''
         run: |
           sudo chmod 777 vpn.log
-          if [[ $disable_openvpn != true ]] ; then sudo killall openvpn ; fi
-        env:
-          disable_openvpn: ${{ secrets.DISABLE_OPENVPN }}
+          sudo killall openvpn
 
       - name: Upload VPN logs
         uses: actions/upload-artifact@v2
-        if: always()
+        env:
+          HTTPS_PROXY: ${{ secrets.HTTPS_PROXY }}
+        if: env.HTTPS_PROXY == ''
         with:
           name: VPN logs
           path: vpn.log

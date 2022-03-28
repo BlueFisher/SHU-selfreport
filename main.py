@@ -192,8 +192,8 @@ if __name__ == "__main__":
     with open(Path(__file__).resolve().parent.joinpath('config.yaml'), encoding='utf8') as f:
         config = yaml.load(f, Loader=yaml.FullLoader)
 
-    if 'users' in os.environ:
-        for user_password in os.environ['users'].split(';'):
+    if 'USERS' in os.environ:
+        for user_password in os.environ['USERS'].split(';'):
             user, password = user_password.split(',')
             config[user] = {
                 'pwd': password
