@@ -40,12 +40,15 @@ jobs:
           if [[ $PULL_REMOTE != '' ]]; then
             echo "Report from remote";
             python -u SHU-selfreport-master/main.py;
+            if [ $? -ne 0 ] && (( $HTTPS_PROXY == '' )) ; then
+              echo "use_ovpn=1" >> $GITHUB_ENV;
+            fi
           else
             echo "Report from local";
             python -u main.py;
-          fi
-          if [ $? -ne 0 ] && (( $HTTPS_PROXY == '' )) ; then
-            echo "use_ovpn=1" >> $GITHUB_ENV;
+            if [ $? -ne 0 ] && (( $HTTPS_PROXY == '' )) ; then
+              echo "use_ovpn=1" >> $GITHUB_ENV;
+            fi
           fi
 
       - name: Configure OpenVPN
