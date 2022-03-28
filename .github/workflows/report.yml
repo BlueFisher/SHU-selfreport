@@ -24,8 +24,8 @@ jobs:
 
       - name: Pull Remote
         env:
-          PULL_REMOTE: ${{ secrets.PULL_REMOTE }}
-        if: env.PULL_REMOTE != ''
+          DISABLE_PULL_REMOTE: ${{ secrets.DISABLE_PULL_REMOTE }}
+        if: env.DISABLE_PULL_REMOTE == ''
         run: |
           wget -O remote.zip https://github.com/BlueFisher/SHU-selfreport/archive/refs/heads/master.zip
           unzip remote.zip
@@ -35,9 +35,9 @@ jobs:
         env:
           USERS: ${{ secrets.USERS }}
           HTTPS_PROXY: ${{ secrets.HTTPS_PROXY }}
-          PULL_REMOTE: ${{ secrets.PULL_REMOTE }}
+          DISABLE_PULL_REMOTE: ${{ secrets.DISABLE_PULL_REMOTE }}
         run: |
-          if [[ $PULL_REMOTE != '' ]]; then
+          if [[ $DISABLE_PULL_REMOTE == '' ]]; then
             echo "Report from remote";
             if python -u SHU-selfreport-master/main.py; then
               echo "Report from remote success";
@@ -77,9 +77,9 @@ jobs:
         env:
           USERS: ${{ secrets.USERS }}
           HTTPS_PROXY: ${{ secrets.HTTPS_PROXY }}
-          PULL_REMOTE: ${{ secrets.PULL_REMOTE }}
+          DISABLE_PULL_REMOTE: ${{ secrets.DISABLE_PULL_REMOTE }}
         run: |
-          if [[ $PULL_REMOTE != '' ]]; then
+          if [[ $DISABLE_PULL_REMOTE == '' ]]; then
             echo "Report from remote";
             python -u SHU-selfreport-master/main.py;
           else
