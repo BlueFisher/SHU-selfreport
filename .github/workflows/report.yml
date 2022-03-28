@@ -39,7 +39,7 @@ jobs:
         run: |
           if [[ $PULL_REMOTE != '' ]]; then
             echo "Report from remote";
-            if python -u SHU-selfreport-master/main.py; ; then
+            if python -u SHU-selfreport-master/main.py; then
               echo "Report from remote success";
             else
               echo "Report from remote failed";
