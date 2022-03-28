@@ -1,4 +1,8 @@
 #!/usr/bin/env bash
+
+# This code is maintained by @panghaibin and is distributed under the GPL-2.0 license.
+# Original source: https://github.com/panghaibin/shuasr/blob/master/ovpn.sh
+
 connect_times=0
 while true; do
   openvpn --config ".github/vpn/config.ovpn" --log "vpn.log" --daemon

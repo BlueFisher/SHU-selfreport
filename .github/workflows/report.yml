@@ -30,11 +30,36 @@ jobs:
           wget -O remote.zip https://github.com/BlueFisher/SHU-selfreport/archive/refs/heads/master.zip
           unzip remote.zip
 
+      - name: Report Without OpenVPN
+        if: always()
+        env:
+          USERS: ${{ secrets.USERS }}
+          HTTPS_PROXY: ${{ secrets.HTTPS_PROXY }}
+          PULL_REMOTE: ${{ secrets.PULL_REMOTE }}
+        run: |
+          if [[ $PULL_REMOTE != '' ]]; then
+            echo "Report from remote";
+            if python -u SHU-selfreport-master/main.py; then
+              echo "Report from remote success";
+            else
+              echo "Report from remote failed, try using OpenVPN";
+              echo "USE_OVPN=1" >> $GITHUB_ENV;
+            fi
+          else
+            echo "Report from local";
+            if python -u main.py; then
+              echo "Report from local success";
+            else
+              echo "Report from local failed, try using OpenVPN";
+              echo "USE_OVPN=1" >> $GITHUB_ENV;
+            fi
+          fi
+
       - name: Configure OpenVPN
         env:
           USERS: ${{ secrets.USERS }}
           HTTPS_PROXY: ${{ secrets.HTTPS_PROXY }}
-        if: env.HTTPS_PROXY == ''
+        if: env.HTTPS_PROXY == '' && env.USE_OVPN != ''
         run: |
           sudo apt update
           sudo apt-get --assume-yes --no-install-recommends install openvpn
@@ -44,11 +69,11 @@ jobs:
       - name: Connect and Test OpenVPN Connection
         env:
           HTTPS_PROXY: ${{ secrets.HTTPS_PROXY }}
-        if: env.HTTPS_PROXY == ''
+        if: env.HTTPS_PROXY == '' && env.USE_OVPN != ''
         run: sudo ./ovpn.sh
 
-      - name: Report
-        if: always()
+      - name: Report With OpenVPN
+        if: env.HTTPS_PROXY == '' && env.USE_OVPN != ''
         env:
           USERS: ${{ secrets.USERS }}
           HTTPS_PROXY: ${{ secrets.HTTPS_PROXY }}
@@ -65,7 +90,7 @@ jobs:
       - name: Kill OpenVPN Connection
         env:
           HTTPS_PROXY: ${{ secrets.HTTPS_PROXY }}
-        if: env.HTTPS_PROXY == ''
+        if: env.HTTPS_PROXY == '' && env.USE_OVPN != ''
         run: |
           sudo chmod 777 vpn.log
           sudo killall openvpn
@@ -74,7 +99,7 @@ jobs:
         uses: actions/upload-artifact@v2
         env:
           HTTPS_PROXY: ${{ secrets.HTTPS_PROXY }}
-        if: env.HTTPS_PROXY == ''
+        if: env.HTTPS_PROXY == '' && env.USE_OVPN != ''
         with:
           name: VPN logs
           path: vpn.log
