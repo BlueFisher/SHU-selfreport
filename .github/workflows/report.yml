@@ -58,8 +58,7 @@ jobs:
       - name: Configure OpenVPN
         env:
           USERS: ${{ secrets.USERS }}
-          HTTPS_PROXY: ${{ secrets.HTTPS_PROXY }}
-        if: env.HTTPS_PROXY == '' && env.USE_OVPN != ''
+        if: env.USE_OVPN != ''
         run: |
           sudo apt update
           sudo apt-get --assume-yes --no-install-recommends install openvpn
@@ -67,13 +66,11 @@ jobs:
           touch vpn.log
 
       - name: Connect and Test OpenVPN Connection
-        env:
-          HTTPS_PROXY: ${{ secrets.HTTPS_PROXY }}
-        if: env.HTTPS_PROXY == '' && env.USE_OVPN != ''
+        if: env.USE_OVPN != ''
         run: sudo ./ovpn.sh
 
       - name: Report With OpenVPN
-        if: env.HTTPS_PROXY == '' && env.USE_OVPN != ''
+        if: env.USE_OVPN != ''
         env:
           USERS: ${{ secrets.USERS }}
           HTTPS_PROXY: ${{ secrets.HTTPS_PROXY }}
@@ -90,7 +87,7 @@ jobs:
       - name: Kill OpenVPN Connection
         env:
           HTTPS_PROXY: ${{ secrets.HTTPS_PROXY }}
-        if: env.HTTPS_PROXY == '' && env.USE_OVPN != ''
+        if: env.USE_OVPN != ''
         run: |
           sudo chmod 777 vpn.log
           sudo killall openvpn
@@ -99,7 +96,7 @@ jobs:
         uses: actions/upload-artifact@v2
         env:
           HTTPS_PROXY: ${{ secrets.HTTPS_PROXY }}
-        if: env.HTTPS_PROXY == '' && env.USE_OVPN != ''
+        if: env.USE_OVPN != ''
         with:
           name: VPN logs
           path: vpn.log
