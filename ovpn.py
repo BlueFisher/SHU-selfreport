@@ -1,3 +1,7 @@
+"""
+This code is maintained by @panghaibin and is distributed under the GPL-2.0 license.
+Original source: https://github.com/panghaibin/shuasr/blob/master/ovpn.py
+"""
 import os
 import re
 SHU_DOMAINS = [

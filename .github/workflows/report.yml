@@ -22,61 +22,77 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r requirements.txt
 
-#      - name: Pull Remote
-#        env:
-#          PULL_REMOTE: ${{ secrets.PULL_REMOTE }}
-#        if: env.PULL_REMOTE != ''
-#        run: |
-#          wget -O remote.zip https://github.com/BlueFisher/SHU-selfreport/archive/refs/heads/master.zip
-#          unzip remote.zip
-#
-#      - name: Configure OpenVPN
-#        env:
-#          USERS: ${{ secrets.USERS }}
-#          HTTPS_PROXY: ${{ secrets.HTTPS_PROXY }}
-#        if: env.HTTPS_PROXY == ''
-#        run: |
-#          sudo apt update
-#          sudo apt-get --assume-yes --no-install-recommends install openvpn
-#          python3 ovpn.py
-#          touch vpn.log
-#
-#      - name: Connect and Test OpenVPN Connection
-#        env:
-#          HTTPS_PROXY: ${{ secrets.HTTPS_PROXY }}
-#        if: env.HTTPS_PROXY == ''
-#        run: sudo ./ovpn.sh
+      - name: Pull Remote
+        env:
+          PULL_REMOTE: ${{ secrets.PULL_REMOTE }}
+        if: env.PULL_REMOTE != ''
+        run: |
+          wget -O remote.zip https://github.com/BlueFisher/SHU-selfreport/archive/refs/heads/master.zip
+          unzip remote.zip
 
-      - name: Report
+      - name: Report Without OpenVPN
         if: always()
         env:
           USERS: ${{ secrets.USERS }}
           HTTPS_PROXY: ${{ secrets.HTTPS_PROXY }}
           PULL_REMOTE: ${{ secrets.PULL_REMOTE }}
         run: |
-          python -u main.py;
-#        run: |
-#          if [[ $PULL_REMOTE != '' ]]; then
-#            echo "Report from remote";
-#            python -u SHU-selfreport-master/main.py;
-#          else
-#            echo "Report from local";
-#            python -u main.py;
-#          fi
+          if [[ $PULL_REMOTE != '' ]]; then
+            echo "Report from remote";
+            python -u SHU-selfreport-master/main.py;
+          else
+            echo "Report from local";
+            python -u main.py;
+          fi
+          if [ $? -ne 0 ] && (( $HTTPS_PROXY == '' )) ; then
+            echo "use_ovpn=1" >> $GITHUB_ENV;
+          fi
 
-#      - name: Kill OpenVPN Connection
-#        env:
-#          HTTPS_PROXY: ${{ secrets.HTTPS_PROXY }}
-#        if: env.HTTPS_PROXY == ''
-#        run: |
-#          sudo chmod 777 vpn.log
-#          sudo killall openvpn
-#
-#      - name: Upload VPN logs
-#        uses: actions/upload-artifact@v2
-#        env:
-#          HTTPS_PROXY: ${{ secrets.HTTPS_PROXY }}
-#        if: env.HTTPS_PROXY == ''
-#        with:
-#          name: VPN logs
-#          path: vpn.log
+      - name: Configure OpenVPN
+        env:
+          USERS: ${{ secrets.USERS }}
+          HTTPS_PROXY: ${{ secrets.HTTPS_PROXY }}
+        if: env.HTTPS_PROXY == '' && env.use_ovpn == 1
+        run: |
+          sudo apt update
+          sudo apt-get --assume-yes --no-install-recommends install openvpn
+          python3 ovpn.py
+          touch vpn.log
+
+      - name: Connect and Test OpenVPN Connection
+        env:
+          HTTPS_PROXY: ${{ secrets.HTTPS_PROXY }}
+        if: env.HTTPS_PROXY == '' && env.use_ovpn == 1
+        run: sudo ./ovpn.sh
+
+      - name: Report
+        if: env.HTTPS_PROXY == '' && env.use_ovpn == 1
+        env:
+          USERS: ${{ secrets.USERS }}
+          HTTPS_PROXY: ${{ secrets.HTTPS_PROXY }}
+          PULL_REMOTE: ${{ secrets.PULL_REMOTE }}
+        run: |
+          if [[ $PULL_REMOTE != '' ]]; then
+            echo "Report from remote";
+            python -u SHU-selfreport-master/main.py;
+          else
+            echo "Report from local";
+            python -u main.py;
+          fi
+
+      - name: Kill OpenVPN Connection
+        env:
+          HTTPS_PROXY: ${{ secrets.HTTPS_PROXY }}
+        if: env.HTTPS_PROXY == '' && env.use_ovpn == 1
+        run: |
+          sudo chmod 777 vpn.log
+          sudo killall openvpn
+
+      - name: Upload VPN logs
+        uses: actions/upload-artifact@v2
+        env:
+          HTTPS_PROXY: ${{ secrets.HTTPS_PROXY }}
+        if: env.HTTPS_PROXY == '' && env.use_ovpn == 1
+        with:
+          name: VPN logs
+          path: vpn.log
