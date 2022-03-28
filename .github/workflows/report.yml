@@ -41,13 +41,15 @@ jobs:
             echo "Report from remote";
             python -u SHU-selfreport-master/main.py;
             if [ $? -ne 0 ] ; then
-              echo "use_ovpn=1" >> $GITHUB_ENV;
+              echo "USE_OVPN=1" >> $GITHUB_ENV;
             fi
           else
             echo "Report from local";
             python -u main.py;
             if [ $? -ne 0 ] ; then
-              echo "use_ovpn=1" >> $GITHUB_ENV;
+              echo "USE_OVPN=1" >> $GITHUB_ENV;
+            else
+              echo $?;
             fi
           fi
 
@@ -55,7 +57,7 @@ jobs:
         env:
           USERS: ${{ secrets.USERS }}
           HTTPS_PROXY: ${{ secrets.HTTPS_PROXY }}
-        if: env.HTTPS_PROXY == '' && env.use_ovpn == 1
+        if: env.HTTPS_PROXY == '' && env.USE_OVPN != ''
         run: |
           sudo apt update
           sudo apt-get --assume-yes --no-install-recommends install openvpn
@@ -65,11 +67,11 @@ jobs:
       - name: Connect and Test OpenVPN Connection
         env:
           HTTPS_PROXY: ${{ secrets.HTTPS_PROXY }}
-        if: env.HTTPS_PROXY == '' && env.use_ovpn == 1
+        if: env.HTTPS_PROXY == '' && env.USE_OVPN != ''
         run: sudo ./ovpn.sh
 
       - name: Report
-        if: env.HTTPS_PROXY == '' && env.use_ovpn == 1
+        if: env.HTTPS_PROXY == '' && env.USE_OVPN != ''
         env:
           USERS: ${{ secrets.USERS }}
           HTTPS_PROXY: ${{ secrets.HTTPS_PROXY }}
@@ -86,7 +88,7 @@ jobs:
       - name: Kill OpenVPN Connection
         env:
           HTTPS_PROXY: ${{ secrets.HTTPS_PROXY }}
-        if: env.HTTPS_PROXY == '' && env.use_ovpn == 1
+        if: env.HTTPS_PROXY == '' && env.USE_OVPN != ''
         run: |
           sudo chmod 777 vpn.log
           sudo killall openvpn
@@ -95,7 +97,7 @@ jobs:
         uses: actions/upload-artifact@v2
         env:
           HTTPS_PROXY: ${{ secrets.HTTPS_PROXY }}
-        if: env.HTTPS_PROXY == '' && env.use_ovpn == 1
+        if: env.HTTPS_PROXY == '' && env.USE_OVPN != ''
         with:
           name: VPN logs
           path: vpn.log
