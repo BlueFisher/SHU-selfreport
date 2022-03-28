@@ -39,17 +39,19 @@ jobs:
         run: |
           if [[ $PULL_REMOTE != '' ]]; then
             echo "Report from remote";
-            python -u SHU-selfreport-master/main.py;
-            if [ $? -ne 0 ] ; then
+            if python -u SHU-selfreport-master/main.py; ; then
+              echo "Report from remote success";
+            else
+              echo "Report from remote failed";
               echo "USE_OVPN=1" >> $GITHUB_ENV;
             fi
           else
             echo "Report from local";
-            python -u main.py;
-            if [ $? -ne 0 ] ; then
-              echo "USE_OVPN=1" >> $GITHUB_ENV;
+            if python -u main.py; then
+              echo "Report from local success";
             else
-              echo $?;
+              echo "Report from local failed";
+              echo "USE_OVPN=1" >> $GITHUB_ENV;
             fi
           fi
 
