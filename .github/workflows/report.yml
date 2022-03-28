@@ -42,7 +42,7 @@ jobs:
             if python -u SHU-selfreport-master/main.py; then
               echo "Report from remote success";
             else
-              echo "Report from remote failed";
+              echo "Report from remote failed, try using OpenVPN";
               echo "USE_OVPN=1" >> $GITHUB_ENV;
             fi
           else
@@ -50,7 +50,7 @@ jobs:
             if python -u main.py; then
               echo "Report from local success";
             else
-              echo "Report from local failed";
+              echo "Report from local failed, try using OpenVPN";
               echo "USE_OVPN=1" >> $GITHUB_ENV;
             fi
           fi
@@ -72,7 +72,7 @@ jobs:
         if: env.HTTPS_PROXY == '' && env.USE_OVPN != ''
         run: sudo ./ovpn.sh
 
-      - name: Report
+      - name: Report With OpenVPN
         if: env.HTTPS_PROXY == '' && env.USE_OVPN != ''
         env:
           USERS: ${{ secrets.USERS }}
