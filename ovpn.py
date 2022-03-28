@@ -34,7 +34,7 @@ def get_route_config():
 
 def config_ovpn():
     global SHU_IPS
-    users = os.environ['users'].split(';')
+    users = os.environ['USERS'].split(';')
     user = users[0].split(',')
     secret = user[0] + "\n" + user[1]
     with open('secret.txt', 'w') as f:
