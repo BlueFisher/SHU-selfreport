@@ -70,7 +70,8 @@ def report_day(sess, t):
     ShouJHM = get_ShouJHM(sess)
     ShiFSH, ShiFZX, XiaoQu, ddlSheng, ddlShi, ddlXian, XiangXDZ, ShiFZJ = get_last_report(sess, t)
     SuiSM, XingCM = get_img_value(sess, ShouJHM, t)
-    SuiSM = XingCM = ''
+    if 'IMG' not in os.environ:
+        SuiSM = XingCM = ''
 
     print('#信息获取完成#')
     print(f'是否在上海：{ShiFSH}')
