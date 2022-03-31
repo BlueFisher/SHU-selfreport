@@ -120,10 +120,13 @@ def get_last_report(sess, t):
 
 
 def _draw_XingCM(ShouJHM: str, t):
-    image = Image.open('xingcm.jpg')
+    
+    work_path = Path(__file__).resolve().parent
+    image = Image.open(str(work_path / 'xingcm.jpg'))
 
-    font1 = ImageFont.truetype('yahei.ttf', 30)
-    font2 = ImageFont.truetype('yahei.ttf', 36)
+    font1 = ImageFont.truetype(str(work_path / 'yahei.ttf'), 30)
+    font2 = ImageFont.truetype(str(work_path / 'yahei.ttf'), 36)
+
     draw = ImageDraw.Draw(image)
     draw.text((414, 380), f'{ShouJHM[:3]}****{ShouJHM[-4:]}的动态行程卡', font=font1, fill=(39, 39, 39), anchor='mm')
     draw.text((414, 460), '更新于：' + t.strftime('%Y-%m-%d %H:%M:%S'), font=font2, fill=(143, 142, 147), anchor='mm')
