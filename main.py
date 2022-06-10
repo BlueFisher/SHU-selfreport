@@ -68,13 +68,14 @@ def report_day(sess, t):
 
     BaoSRQ = t.strftime('%Y-%m-%d')
     ShouJHM = get_ShouJHM(sess)
-    ShiFSH, ShiFZX, XiaoQu, ddlSheng, ddlShi, ddlXian, XiangXDZ, ShiFZJ = get_last_report(sess, t)
+    ShiFSH, JinXXQ, ShiFZX, XiaoQu, ddlSheng, ddlShi, ddlXian, XiangXDZ, ShiFZJ = get_last_report(sess, t)
     SuiSM, XingCM = get_img_value(sess, ShouJHM, t)
     if 'IMG' not in os.environ:
         SuiSM = XingCM = ''
 
     print('#信息获取完成#')
     print(f'是否在上海：{ShiFSH}')
+    print(f'进校校区：{JinXXQ}')
     print(f'是否在校：{ShiFZX}')
     print(f'校区：{XiaoQu}')
     print(ddlSheng, ddlShi, ddlXian, f'***{XiangXDZ[-2:]}')
@@ -95,6 +96,7 @@ def report_day(sess, t):
                 "p1$TiWen": "",
                 "p1$GuoNei": "国内",
                 "p1$P_GuoNei$ShiFSH": ShiFSH,
+                "p1$P_GuoNei$JinXXQ": JinXXQ,
                 "p1$P_GuoNei$ShiFZX": ShiFZX,
                 "p1$P_GuoNei$XiaoQu": XiaoQu,
                 "p1$P_GuoNei$pImages$HFimgSuiSM": SuiSM,
@@ -145,7 +147,7 @@ def report_day(sess, t):
                 "p1_ContentPanel1_Collapsed": "true",
                 "p1_GeLSM_Collapsed": "false",
                 "p1_Collapsed": "false",
-                "F_STATE": generate_fstate_day(BaoSRQ, ShiFSH, ShiFZX, XiaoQu,
+                "F_STATE": generate_fstate_day(BaoSRQ, ShiFSH, JinXXQ, ShiFZX, XiaoQu,
                                                ddlSheng, ddlShi, ddlXian, XiangXDZ, ShiFZJ,
                                                SuiSM, XingCM)
             }, headers={

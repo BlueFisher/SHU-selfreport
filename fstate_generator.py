@@ -14,7 +14,7 @@ def _generate_fstate_base64(fstate):
     return base64.b64encode(fstate_bytes).decode()
 
 
-def generate_fstate_day(BaoSRQ, ShiFSH, ShiFZX, XiaoQu,
+def generate_fstate_day(BaoSRQ, ShiFSH, JinXXQ, ShiFZX, XiaoQu,
                         ddlSheng, ddlShi, ddlXian, XiangXDZ, ShiFZJ,
                         SuiSM, XingCM):
     with open(Path(__file__).resolve().parent.joinpath('fstate_day.json'), encoding='utf8') as f:
@@ -22,6 +22,7 @@ def generate_fstate_day(BaoSRQ, ShiFSH, ShiFZX, XiaoQu,
 
     fstate['p1_BaoSRQ']['Text'] = BaoSRQ
     fstate['p1_P_GuoNei_ShiFSH']['SelectedValue'] = ShiFSH
+    fstate['p1_P_GuoNei_JinXXQ']['SelectedValueArray'][0] = JinXXQ
     fstate['p1_P_GuoNei_ShiFZX']['SelectedValue'] = ShiFZX
     fstate['p1_P_GuoNei_XiaoQu']['SelectedValue'] = XiaoQu
     fstate['p1_ddlSheng']['F_Items'] = [[ddlSheng, ddlSheng, 1, '', '']]
@@ -67,6 +68,7 @@ def get_ShouJHM(sess):
 def get_last_report(sess, t):
     print('#正在获取前一天的填报信息...')
     ShiFSH = '在上海（校内）'
+    JinXXQ = '宝山'
     ShiFZX = '是'
     XiaoQu = '宝山'
     ddlSheng = '上海'
@@ -85,6 +87,10 @@ def get_last_report(sess, t):
                 print('-ShiFSH-')
                 ShiFSH = _html_to_json(htmls[i - 1])['Text']
                 print(ShiFSH)
+            if 'JinXXQ' in h:
+                print('-JinXXQ-')
+                JinXXQ = _html_to_json(htmls[i - 1])['Text']
+                print(JinXXQ)
             if 'ShiFZX' in h:
                 print('-ShiFZX-')
                 ShiFZX = _html_to_json(htmls[i - 1])['SelectedValue']
@@ -116,7 +122,7 @@ def get_last_report(sess, t):
         except:
             print('获取前一天日报有错误', htmls[i - 1], htmls[i])
 
-    return ShiFSH, ShiFZX, XiaoQu, ddlSheng, ddlShi, ddlXian, XiangXDZ, ShiFZJ
+    return ShiFSH, JinXXQ, ShiFZX, XiaoQu, ddlSheng, ddlShi, ddlXian, XiangXDZ, ShiFZJ
 
 
 def _draw_XingCM(ShouJHM: str, t):
