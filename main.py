@@ -67,21 +67,21 @@ def report_day(sess, t):
     print('#正在获取历史信息...#')
 
     BaoSRQ = t.strftime('%Y-%m-%d')
-    ShouJHM = get_ShouJHM(sess)
-    ShiFSH, JinXXQ, ShiFZX, XiaoQu, ddlSheng, ddlShi, ddlXian, XiangXDZ, ShiFZJ = get_last_report(sess, t)
-    SuiSM, XingCM = get_img_value(sess, ShouJHM, t)
-    if 'IMG' not in os.environ:
-        SuiSM = XingCM = ''
+    # ShouJHM = get_ShouJHM(sess)
+    ShiFSH, JinXXQ, ShiFZX, XiaoQu, ddlSheng, ddlShi, ddlXian, ddlJieDao, XiangXDZ, ShiFZJ = get_last_report(sess, t)
+    # SuiSM, XingCM = get_img_value(sess, ShouJHM, t)
+    # if 'IMG' not in os.environ:
+    #     SuiSM = XingCM = ''
 
     print('#信息获取完成#')
     print(f'是否在上海：{ShiFSH}')
     print(f'进校校区：{JinXXQ}')
     print(f'是否在校：{ShiFZX}')
     print(f'校区：{XiaoQu}')
-    print(ddlSheng, ddlShi, ddlXian, f'***{XiangXDZ[-2:]}')
+    print(ddlSheng, ddlShi, ddlXian, ddlJieDao, f'***{XiangXDZ[-2:]}')
     print(f'是否为家庭地址：{ShiFZJ}')
-    print(f'随申码：{SuiSM}')
-    print(f'行程码：{XingCM}')
+    # print(f'随申码：{SuiSM}')
+    # print(f'行程码：{XingCM}')
 
     for _ in range(RETRY):
         try:
@@ -99,8 +99,7 @@ def report_day(sess, t):
                 "p1$P_GuoNei$JinXXQ": JinXXQ,
                 "p1$P_GuoNei$ShiFZX": ShiFZX,
                 "p1$P_GuoNei$XiaoQu": XiaoQu,
-                "p1$P_GuoNei$pImages$HFimgSuiSM": SuiSM,
-                "p1$P_GuoNei$pImages$HFimgXingCM": XingCM,
+                "p1$P_GuoNei$pImages$HFimgXingCM": "",
                 "p1$JiuYe_ShouJHM": "",
                 "p1$JiuYe_Email": "",
                 "p1$JiuYe_Wechat": "",
@@ -115,41 +114,23 @@ def report_day(sess, t):
                 "p1$ddlShi": ddlShi,
                 "p1$ddlXian$Value": ddlXian,
                 "p1$ddlXian": ddlXian,
+                "p1$ddlJieDao$Value": ddlJieDao,
+                "p1$ddlJieDao": ddlJieDao,
                 "p1$XiangXDZ": XiangXDZ,
                 "p1$ShiFZJ": ShiFZJ,
-                "p1$FengXDQDL": "否",
-                "p1$TongZWDLH": "否",
-                "p1$CengFWH": "否",
-                "p1$CengFWH_RiQi": "",
-                "p1$CengFWH_BeiZhu": "",
-                "p1$JieChu": "否",
-                "p1$JieChu_RiQi": "",
-                "p1$JieChu_BeiZhu": "",
-                "p1$TuJWH": "否",
-                "p1$TuJWH_RiQi": "",
-                "p1$TuJWH_BeiZhu": "",
                 "p1$QueZHZJC$Value": "否",
                 "p1$QueZHZJC": "否",
                 "p1$DangRGL": "否",
                 "p1$GeLDZ": "",
-                "p1$FanXRQ": "",
-                "p1$WeiFHYY": "",
-                "p1$ShangHJZD": "",
-                "p1$DaoXQLYGJ": "没有",
-                "p1$DaoXQLYCS": "没有",
-                "p1$JiaRen_BeiZhu": "",
-                "p1$SuiSM": "绿色",
-                "p1$LvMa14Days": "是",
                 "p1$Address2": "",
                 "p1_pnlDangSZS_Collapsed": "false",
                 "p1_P_GuoNei_pImages_Collapsed": "false",
                 "p1_P_GuoNei_Collapsed": "false",
-                "p1_ContentPanel1_Collapsed": "true",
                 "p1_GeLSM_Collapsed": "false",
                 "p1_Collapsed": "false",
                 "F_STATE": generate_fstate_day(BaoSRQ, ShiFSH, JinXXQ, ShiFZX, XiaoQu,
-                                               ddlSheng, ddlShi, ddlXian, XiangXDZ, ShiFZJ,
-                                               SuiSM, XingCM)
+                                               ddlSheng, ddlShi, ddlXian, ddlJieDao, XiangXDZ, ShiFZJ,
+                                               None, None)
             }, headers={
                 'X-Requested-With': 'XMLHttpRequest',
                 'X-FineUI-Ajax': 'true'

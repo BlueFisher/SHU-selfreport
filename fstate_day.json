@@ -10,7 +10,7 @@
         "IFrameAttributes": {}
     },
     "p1_BaoSRQ": {
-        "Text": "2022-06-10"
+        "Text": "2022-07-06"
     },
     "p1_DangQSTZK": {
         "F_Items": [
@@ -64,9 +64,7 @@
         "SelectedValue": "国内"
     },
     "p1_P_GuoNei_ShiFSH": {
-        "Required": true,
         "Hidden": false,
-        "SelectedValue": "在上海（校内）",
         "F_Items": [
             [
                 "在上海（校内）",
@@ -83,14 +81,10 @@
                 "不在上海",
                 1
             ]
-        ]
+        ],
+        "SelectedValue": "在上海（校内）"
     },
     "p1_P_GuoNei_JinXXQ": {
-        "Required": true,
-        "Hidden": false,
-        "SelectedValueArray": [
-            "宝山"
-        ],
         "F_Items": [
             [
                 "宝山",
@@ -112,12 +106,13 @@
                 "新闸路",
                 1
             ]
-        ]
+        ],
+        "SelectedValueArray": [
+            "宝山"
+        ],
+        "Hidden": false
     },
     "p1_P_GuoNei_ShiFZX": {
-        "Required": true,
-        "Hidden": false,
-        "SelectedValue": "是",
         "F_Items": [
             [
                 "是",
@@ -129,11 +124,11 @@
                 "不住校",
                 1
             ]
-        ]
+        ],
+        "SelectedValue": "是",
+        "Hidden": false
     },
     "p1_P_GuoNei_XiaoQu": {
-        "Hidden": false,
-        "SelectedValue": "宝山",
         "F_Items": [
             [
                 "宝山",
@@ -155,19 +150,9 @@
                 "新闸路",
                 1
             ]
-        ]
-    },
-    "p1_P_GuoNei_pImages_HFimgSuiSM": {
-        "Text": "cYskH72v3ZA="
-    },
-    "p1_P_GuoNei_pImages_imgSuiSM": {
-        "ImageUrl": "/ShowImage.ashx?squrl=0"
-    },
-    "p1_P_GuoNei_pImages_HFimgXingCM": {
-        "Text": "cYskH72v3ZA="
-    },
-    "p1_P_GuoNei_pImages_imgXingCM": {
-        "ImageUrl": "/ShowImage.ashx?squrl=0"
+        ],
+        "SelectedValue": "宝山",
+        "Hidden": false
     },
     "p1_P_GuoNei_pImages": {
         "IFrameAttributes": {}
@@ -2067,7 +2052,6 @@
         ]
     },
     "p1_ddlXian": {
-        "Hidden": false,
         "Enabled": true,
         "F_Items": [
             [
@@ -2192,12 +2176,112 @@
         ],
         "SelectedValueArray": [
             "宝山区"
+        ],
+        "Hidden": false
+    },
+    "p1_ddlJieDao": {
+        "Hidden": false,
+        "F_Items": [
+            [
+                "-1",
+                "选择街道",
+                1,
+                "",
+                ""
+            ],
+            [
+                "大场镇",
+                "大场镇",
+                1,
+                "大场镇",
+                ""
+            ],
+            [
+                "高境镇",
+                "高境镇",
+                1,
+                "高境镇",
+                ""
+            ],
+            [
+                "顾村镇",
+                "顾村镇",
+                1,
+                "顾村镇",
+                ""
+            ],
+            [
+                "罗店镇",
+                "罗店镇",
+                1,
+                "罗店镇",
+                ""
+            ],
+            [
+                "罗泾镇",
+                "罗泾镇",
+                1,
+                "罗泾镇",
+                ""
+            ],
+            [
+                "庙行镇",
+                "庙行镇",
+                1,
+                "庙行镇",
+                ""
+            ],
+            [
+                "淞南镇",
+                "淞南镇",
+                1,
+                "淞南镇",
+                ""
+            ],
+            [
+                "吴淞街道",
+                "吴淞街道",
+                1,
+                "吴淞街道",
+                ""
+            ],
+            [
+                "杨行镇",
+                "杨行镇",
+                1,
+                "杨行镇",
+                ""
+            ],
+            [
+                "友谊路街道",
+                "友谊路街道",
+                1,
+                "友谊路街道",
+                ""
+            ],
+            [
+                "月浦镇",
+                "月浦镇",
+                1,
+                "月浦镇",
+                ""
+            ],
+            [
+                "张庙街道",
+                "张庙街道",
+                1,
+                "张庙街道",
+                ""
+            ]
+        ],
+        "SelectedValueArray": [
+            "大场镇"
         ]
     },
     "p1_XiangXDZ": {
+        "Text": "上海大学",
         "Hidden": false,
-        "Label": "国内详细地址（省市区县无需重复填写）",
-        "Text": "上海大学"
+        "Label": "校内宿舍地址（校区、幢楼 、房间）"
     },
     "p1_ShiFZJ": {
         "Required": true,
@@ -2214,7 +2298,7 @@
                 1
             ]
         ],
-        "SelectedValue": null
+        "SelectedValue": "否"
     },
     "p1_QueZHZJC": {
         "F_Items": [
@@ -2274,7 +2358,8 @@
         "SelectedValue": null
     },
     "p1_GeLDZ": {
-        "Hidden": true
+        "Hidden": true,
+        "Required": false
     },
     "p1_ctl01_btnReturn": {
         "OnClientClick": "document.location.href='/Default.aspx';return;"

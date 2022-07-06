@@ -15,9 +15,9 @@ def _generate_fstate_base64(fstate):
 
 
 def generate_fstate_day(BaoSRQ, ShiFSH, JinXXQ, ShiFZX, XiaoQu,
-                        ddlSheng, ddlShi, ddlXian, XiangXDZ, ShiFZJ,
+                        ddlSheng, ddlShi, ddlXian, ddlJieDao, XiangXDZ, ShiFZJ,
                         SuiSM, XingCM):
-    with open(Path(__file__).resolve().parent.joinpath('fstate_day.json'), encoding='utf8') as f:
+    with open('fstate_day.json', encoding='utf8') as f:
         fstate = json.loads(f.read())
 
     fstate['p1_BaoSRQ']['Text'] = BaoSRQ
@@ -31,10 +31,12 @@ def generate_fstate_day(BaoSRQ, ShiFSH, JinXXQ, ShiFZX, XiaoQu,
     fstate['p1_ddlShi']['SelectedValueArray'] = [ddlShi]
     fstate['p1_ddlXian']['F_Items'] = [[ddlXian, ddlXian, 1, '', '']]
     fstate['p1_ddlXian']['SelectedValueArray'] = [ddlXian]
+    fstate['p1_ddlJieDao']['F_Items'] = [[ddlJieDao, ddlJieDao, 1, '', '']]
+    fstate['p1_ddlJieDao']['SelectedValueArray'] = [ddlJieDao]
     fstate['p1_XiangXDZ']['Text'] = XiangXDZ
     fstate['p1_ShiFZJ']['SelectedValue'] = ShiFZJ
-    fstate['p1_P_GuoNei_pImages_HFimgSuiSM']['Text'] = SuiSM
-    fstate['p1_P_GuoNei_pImages_HFimgXingCM']['Text'] = XingCM
+    # fstate['p1_P_GuoNei_pImages_HFimgSuiSM']['Text'] = SuiSM
+    # fstate['p1_P_GuoNei_pImages_HFimgXingCM']['Text'] = XingCM
 
     fstate_base64 = _generate_fstate_base64(fstate)
     t = len(fstate_base64) // 2
@@ -74,6 +76,7 @@ def get_last_report(sess, t):
     ddlSheng = '上海'
     ddlShi = '上海市'
     ddlXian = '宝山区'
+    ddlJieDao = '大场镇'
     XiangXDZ = '上海大学'
     ShiFZJ = '是'
 
@@ -111,6 +114,12 @@ def get_last_report(sess, t):
                 print('-ddlXian-')
                 ddlXian = _html_to_json(htmls[i - 1])['SelectedValueArray'][0]
                 print(ddlXian)
+            if 'ddlJieDao' in h:
+                print('-ddlJieDao-')
+                ddlJieDao = _html_to_json(htmls[i - 1])['SelectedValueArray'][0]
+                if ddlJieDao == '-1':
+                    ddlJieDao = '大场镇'
+                print(ddlJieDao)
             if 'XiangXDZ' in h:
                 print('-XiangXDZ-')
                 XiangXDZ = _html_to_json(htmls[i - 1])['Text']
@@ -121,8 +130,8 @@ def get_last_report(sess, t):
                 print(ShiFZJ)
         except:
             print('获取前一天日报有错误', htmls[i - 1], htmls[i])
-
-    return ShiFSH, JinXXQ, ShiFZX, XiaoQu, ddlSheng, ddlShi, ddlXian, XiangXDZ, ShiFZJ
+    
+    return ShiFSH, JinXXQ, ShiFZX, XiaoQu, ddlSheng, ddlShi, ddlXian, ddlJieDao, XiangXDZ, ShiFZJ
 
 
 def _draw_XingCM(ShouJHM: str, t):
