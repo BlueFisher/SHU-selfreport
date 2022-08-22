@@ -17,7 +17,7 @@ def _generate_fstate_base64(fstate):
 def generate_fstate_day(BaoSRQ, ShiFSH, JinXXQ, ShiFZX, XiaoQu,
                         ddlSheng, ddlShi, ddlXian, ddlJieDao, XiangXDZ, ShiFZJ,
                         SuiSM, XingCM):
-    with open('fstate_day.json', encoding='utf8') as f:
+    with open(Path(__file__).resolve().parent.joinpath('fstate_day.json'), encoding='utf8') as f:
         fstate = json.loads(f.read())
 
     fstate['p1_BaoSRQ']['Text'] = BaoSRQ
