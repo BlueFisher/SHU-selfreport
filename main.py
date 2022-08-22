@@ -121,6 +121,7 @@ def report_day(sess, t):
                 "p1$ShiFZJ": ShiFZJ,
                 "p1$GaoZDFXLJS": "无",
                 "p1$QueZHZJC$Value": "否",
+                "p1$GaoZDFXLJS": "无",
                 "p1$QueZHZJC": "否",
                 "p1$DangRGL": "否",
                 "p1$GeLDZ": "",
