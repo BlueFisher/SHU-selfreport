@@ -17,7 +17,7 @@ def _generate_fstate_base64(fstate):
 def generate_fstate_day(BaoSRQ, ShiFSH, JinXXQ, ShiFZX, XiaoQu,
                         ddlSheng, ddlShi, ddlXian, ddlJieDao, XiangXDZ, ShiFZJ,
                         SuiSM, XingCM):
-    with open('fstate_day.json', encoding='utf8') as f:
+    with open(Path(__file__).resolve().parent.joinpath('fstate_day.json'), encoding='utf8') as f:
         fstate = json.loads(f.read())
 
     fstate['p1_BaoSRQ']['Text'] = BaoSRQ
@@ -92,7 +92,7 @@ def get_last_report(sess, t):
                 print(ShiFSH)
             if 'JinXXQ' in h:
                 print('-JinXXQ-')
-                JinXXQ = _html_to_json(htmls[i - 1])['Text']
+                JinXXQ = "" if "不在上海" in ShiFSH else _html_to_json(htmls[i - 1])['Text']
                 print(JinXXQ)
             if 'ShiFZX' in h:
                 print('-ShiFZX-')
@@ -100,7 +100,7 @@ def get_last_report(sess, t):
                 print(ShiFZX)
             if 'XiaoQu' in h:
                 print('-XiaoQu-')
-                XiaoQu = _html_to_json(htmls[i - 1])['Text']
+                XiaoQu = "" if "不在上海" in ShiFSH else _html_to_json(htmls[i - 1])['Text']
                 print(XiaoQu)
             if 'ddlSheng' in h:
                 print('-ddlSheng-')
@@ -116,9 +116,12 @@ def get_last_report(sess, t):
                 print(ddlXian)
             if 'ddlJieDao' in h:
                 print('-ddlJieDao-')
-                ddlJieDao = _html_to_json(htmls[i - 1])['SelectedValueArray'][0]
-                if ddlJieDao == '-1':
-                    ddlJieDao = '大场镇'
+                if "不在上海" in ShiFSH:
+                    ddlJieDao = ""
+                else:
+                    ddlJieDao = _html_to_json(htmls[i - 1])['SelectedValueArray'][0]
+                    if ddlJieDao == '-1':
+                        ddlJieDao = '大场镇'
                 print(ddlJieDao)
             if 'XiangXDZ' in h:
                 print('-XiangXDZ-')
@@ -130,12 +133,12 @@ def get_last_report(sess, t):
                 print(ShiFZJ)
         except:
             print('获取前一天日报有错误', htmls[i - 1], htmls[i])
-    
+
     return ShiFSH, JinXXQ, ShiFZX, XiaoQu, ddlSheng, ddlShi, ddlXian, ddlJieDao, XiangXDZ, ShiFZJ
 
 
 def _draw_XingCM(ShouJHM: str, t):
-    
+
     work_path = Path(__file__).resolve().parent
     image = Image.open(str(work_path / 'xingcm.jpg'))
 
