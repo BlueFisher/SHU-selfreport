@@ -68,8 +68,7 @@ def report_day(sess, t):
 
     BaoSRQ = t.strftime('%Y-%m-%d')
     # ShouJHM = get_ShouJHM(sess)
-    ShiFSH, JinXXQ, ShiFZX, XiaoQu, ddlSheng, ddlShi, ddlXian, ddlJieDao, XiangXDZ, ShiFZJ = get_last_report(
-        sess, t)
+    ShiFSH, JinXXQ, ShiFZX, XiaoQu, ddlSheng, ddlShi, ddlXian, ddlJieDao, XiangXDZ, ShiFZJ = get_last_report(sess, t)
     # SuiSM, XingCM = get_img_value(sess, ShouJHM, t)
     # if 'IMG' not in os.environ:
     #     SuiSM = XingCM = ''
@@ -168,8 +167,7 @@ def view_messages(sess):
             f_items = json.loads(h[h.find('=') + 1:])['F_Items']
             for item in f_items:
                 if '未读' in item[1]:
-                    sess.get(
-                        f'https://selfreport.shu.edu.cn{item[4]}', allow_redirects=False)
+                    sess.get(f'https://selfreport.shu.edu.cn{item[4]}', allow_redirects=False)
                     print('已读', item[4])
             break
 
@@ -202,8 +200,7 @@ if __name__ == "__main__":
         if sess:
             print('登录成功')
 
-            fake_ip = '59.79.' + \
-                '.'.join(str(random.randint(0, 255)) for _ in range(2))
+            fake_ip = '59.79.' + '.'.join(str(random.randint(0, 255)) for _ in range(2))
             print('生成了随机IP: %s' % fake_ip)
             headers = {
                 'X-Forwarded-For': fake_ip,
