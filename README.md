@@ -129,6 +129,22 @@ crontab -e
 0 * * * * python -u /xxx/main.py 2>&1 >> /xxx/shu_report.log
 ```
 
+### 3. 使用Docker部署自动打卡
+
+在 `config.yaml` 中设置所有需要打卡的学号密码
+
+```bash
+docker build -t selfreport:release .
+docker run --name selfreport selfreport:release
+```
+
+之后在宿主机编辑Crontab即可
+
+```bash
+# crontab -e
+0 4 * * * docker start selfreport
+```
+
 ## 依赖
 
 - python3
