@@ -153,6 +153,7 @@ docker run --name selfreport selfreport:release
   - beautifulsoup4
   - requests
   - pillow
+  - rsa
 
 ## 感谢
 
