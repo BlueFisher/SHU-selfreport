@@ -67,11 +67,11 @@ def report_day(sess, t):
     print('#正在获取历史信息...#')
 
     BaoSRQ = t.strftime('%Y-%m-%d')
-    # ShouJHM = get_ShouJHM(sess)
     ShiFSH, JinXXQ, ShiFZX, XiaoQu, ddlSheng, ddlShi, ddlXian, ddlJieDao, XiangXDZ, ShiFZJ = get_last_report(sess, t)
-    # SuiSM, XingCM = get_img_value(sess, ShouJHM, t)
-    # if 'IMG' not in os.environ:
-    #     SuiSM = XingCM = ''
+    XingCM = ''
+    if 'IMG' in os.environ:
+        ShouJHM = get_ShouJHM(sess)
+        XingCM = get_img_value(sess, ShouJHM, t)
 
     print('#信息获取完成#')
     print(f'是否在上海：{ShiFSH}')
@@ -80,8 +80,7 @@ def report_day(sess, t):
     print(f'校区：{XiaoQu}')
     print(ddlSheng, ddlShi, ddlXian, ddlJieDao, f'***{XiangXDZ[-2:]}')
     print(f'是否为家庭地址：{ShiFZJ}')
-    # print(f'随申码：{SuiSM}')
-    # print(f'行程码：{XingCM}')
+    print(f'行程码：{XingCM}')
 
     for _ in range(RETRY):
         try:
@@ -92,6 +91,7 @@ def report_day(sess, t):
                 "__VIEWSTATEGENERATOR": "7AD7E509",
                 "p1$ChengNuo": "p1_ChengNuo",
                 "p1$BaoSRQ": BaoSRQ,
+                "p1$CengFWSS": "否",
                 "p1$DangQSTZK": "良好",
                 "p1$TiWen": "",
                 "p1$GuoNei": "国内",
@@ -99,8 +99,7 @@ def report_day(sess, t):
                 "p1$P_GuoNei$JinXXQ": JinXXQ,
                 "p1$P_GuoNei$ShiFZX": ShiFZX,
                 "p1$P_GuoNei$XiaoQu": XiaoQu,
-                "p1$P_GuoNei$pImages$HFimgXingCM": "",
-                "p1$JinChuSQ": "0",
+                "p1$P_GuoNei$pImages$HFimgXingCM": XingCM,
                 "p1$JiuYe_ShouJHM": "",
                 "p1$JiuYe_Email": "",
                 "p1$JiuYe_Wechat": "",
@@ -120,10 +119,6 @@ def report_day(sess, t):
                 "p1$XiangXDZ": XiangXDZ,
                 "p1$ShiFZJ": ShiFZJ,
                 "p1$GaoZDFXLJS": "无",
-                "p1$CengFWSS": "否",
-                "p1_CengFWSS": "false",
-                "p1$QueZHZJC$Value": "否",
-                "p1$GaoZDFXLJS": "无",
                 "p1$QueZHZJC": "否",
                 "p1$DangRGL": "否",
                 "p1$GeLDZ": "",
@@ -136,7 +131,7 @@ def report_day(sess, t):
                 "p1_Collapsed": "false",
                 "F_STATE": generate_fstate_day(BaoSRQ, ShiFSH, JinXXQ, ShiFZX, XiaoQu,
                                                ddlSheng, ddlShi, ddlXian, ddlJieDao, XiangXDZ, ShiFZJ,
-                                               None, None)
+                                               XingCM)
             }, headers={
                 'X-Requested-With': 'XMLHttpRequest',
                 'X-FineUI-Ajax': 'true'

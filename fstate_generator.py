@@ -16,7 +16,7 @@ def _generate_fstate_base64(fstate):
 
 def generate_fstate_day(BaoSRQ, ShiFSH, JinXXQ, ShiFZX, XiaoQu,
                         ddlSheng, ddlShi, ddlXian, ddlJieDao, XiangXDZ, ShiFZJ,
-                        SuiSM, XingCM):
+                        XingCM):
     with open(Path(__file__).resolve().parent.joinpath('fstate_day.json'), encoding='utf8') as f:
         fstate = json.loads(f.read())
 
@@ -35,8 +35,7 @@ def generate_fstate_day(BaoSRQ, ShiFSH, JinXXQ, ShiFZX, XiaoQu,
     fstate['p1_ddlJieDao']['SelectedValueArray'] = [ddlJieDao]
     fstate['p1_XiangXDZ']['Text'] = XiangXDZ
     fstate['p1_ShiFZJ']['SelectedValue'] = ShiFZJ
-    # fstate['p1_P_GuoNei_pImages_HFimgSuiSM']['Text'] = SuiSM
-    # fstate['p1_P_GuoNei_pImages_HFimgXingCM']['Text'] = XingCM
+    fstate['p1_P_GuoNei_pImages_HFimgXingCM']['Text'] = XingCM
 
     fstate_base64 = _generate_fstate_base64(fstate)
     t = len(fstate_base64) // 2
@@ -154,10 +153,10 @@ def _draw_XingCM(ShouJHM: str, t):
     return img_path
 
 
-def upload_img(sess, view_state, is_SuiSM, ShouJHM, t):
+def upload_img(sess, view_state, ShouJHM, t):
     img_path = _draw_XingCM(ShouJHM, t)
 
-    target = 'p1$P_GuoNei$pImages$fileSuiSM' if is_SuiSM else 'p1$P_GuoNei$pImages$fileXingCM'
+    target = 'p1$P_GuoNei$pImages$fileXingCM'
     with open(img_path, 'rb') as f:
         r = sess.post('https://selfreport.shu.edu.cn/DayReport.aspx', data={
             '__EVENTTARGET': target,
@@ -171,6 +170,7 @@ def upload_img(sess, view_state, is_SuiSM, ShouJHM, t):
 
     ret = re.search(r'Text&quot;:&quot;(.*?)&quot;}\)', r.text)
     if ret is None:
+        print(r.text)
         return None
     else:
         return ret.group(1)
@@ -179,7 +179,6 @@ def upload_img(sess, view_state, is_SuiSM, ShouJHM, t):
 def get_img_value(sess, ShouJHM, t):
     print('#正在获取随申码、行程码信息...')
 
-    SuiSM = 'cYskH72v3ZA='
     XingCM = 'cYskH72v3ZA='
 
     r = sess.get(f'https://selfreport.shu.edu.cn/DayReport.aspx')
@@ -191,26 +190,15 @@ def get_img_value(sess, ShouJHM, t):
     ret = re.findall(r'^.*//\]', r.text, re.MULTILINE)[0]
     htmls = ret.split(';var ')
     for i, h in enumerate(htmls):
-        if 'p1_P_GuoNei_pImages_fileSuiSM' in h:
-            try:
-                SuiSM = _html_to_json(htmls[i - 1])['Text']
-            except:
-                print('没有获取到已提交随申码，开始自动上传')
-                code = upload_img(sess, view_state, True, ShouJHM, t)
-                if code is None:
-                    print('上传随申码失败，使用默认随申码')
-                else:
-                    SuiSM = code
-
         if 'p1_P_GuoNei_pImages_fileXingCM' in h:
             try:
                 XingCM = _html_to_json(htmls[i - 1])['Text']
             except:
                 print('没有获取到已提交行程码，开始自动上传')
-                code = upload_img(sess, view_state, False, ShouJHM, t)
+                code = upload_img(sess, view_state, ShouJHM, t)
                 if code is None:
                     print('上传行程码失败，使用默认行程码')
                 else:
                     XingCM = code
 
-    return SuiSM, XingCM
+    return XingCM

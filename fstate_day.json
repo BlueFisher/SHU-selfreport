@@ -10,7 +10,22 @@
         "IFrameAttributes": {}
     },
     "p1_BaoSRQ": {
-        "Text": "2022-07-06"
+        "Text": "2022-09-18"
+    },
+    "p1_CengFWSS": {
+        "F_Items": [
+            [
+                "是",
+                "是",
+                1
+            ],
+            [
+                "否",
+                "否",
+                1
+            ]
+        ],
+        "SelectedValue": "否"
     },
     "p1_DangQSTZK": {
         "F_Items": [
@@ -64,7 +79,9 @@
         "SelectedValue": "国内"
     },
     "p1_P_GuoNei_ShiFSH": {
+        "Required": true,
         "Hidden": false,
+        "SelectedValue": "在上海（校内）",
         "F_Items": [
             [
                 "在上海（校内）",
@@ -81,10 +98,14 @@
                 "不在上海",
                 1
             ]
-        ],
-        "SelectedValue": "在上海（校内）"
+        ]
     },
     "p1_P_GuoNei_JinXXQ": {
+        "Required": true,
+        "Hidden": false,
+        "SelectedValueArray": [
+            "宝山"
+        ],
         "F_Items": [
             [
                 "宝山",
@@ -106,13 +127,12 @@
                 "新闸路",
                 1
             ]
-        ],
-        "SelectedValueArray": [
-            "宝山"
-        ],
-        "Hidden": false
+        ]
     },
     "p1_P_GuoNei_ShiFZX": {
+        "Required": true,
+        "Hidden": false,
+        "SelectedValue": "是",
         "F_Items": [
             [
                 "是",
@@ -124,11 +144,11 @@
                 "不住校",
                 1
             ]
-        ],
-        "SelectedValue": "是",
-        "Hidden": false
+        ]
     },
     "p1_P_GuoNei_XiaoQu": {
+        "Hidden": false,
+        "SelectedValue": "宝山",
         "F_Items": [
             [
                 "宝山",
@@ -150,16 +170,41 @@
                 "新闸路",
                 1
             ]
-        ],
-        "SelectedValue": "宝山",
-        "Hidden": false
+        ]
+    },
+    "p1_P_GuoNei_pImages_HFimgXingCM": {
+        "Text": "cYskH72v3ZA="
+    },
+    "p1_P_GuoNei_pImages_imgXingCM": {
+        "ImageUrl": ""
     },
     "p1_P_GuoNei_pImages": {
+        "Hidden": false,
         "IFrameAttributes": {}
     },
     "p1_P_GuoNei": {
         "Hidden": false,
         "IFrameAttributes": {}
+    },
+    "p1_JinChuSQ": {
+        "F_Items": [
+            [
+                "0",
+                "不需要进出校，不申请",
+                1
+            ],
+            [
+                "1",
+                "需要申请进校",
+                1
+            ],
+            [
+                "2",
+                "需要申请出校",
+                1
+            ]
+        ],
+        "SelectedValue": null
     },
     "p1_QiuZZT": {
         "F_Items": [],
@@ -2052,6 +2097,7 @@
         ]
     },
     "p1_ddlXian": {
+        "Hidden": false,
         "Enabled": true,
         "F_Items": [
             [
@@ -2176,8 +2222,7 @@
         ],
         "SelectedValueArray": [
             "宝山区"
-        ],
-        "Hidden": false
+        ]
     },
     "p1_ddlJieDao": {
         "Hidden": false,
@@ -2279,9 +2324,9 @@
         ]
     },
     "p1_XiangXDZ": {
-        "Text": "上海大学",
         "Hidden": false,
-        "Label": "校内宿舍地址（校区、幢楼 、房间）"
+        "Label": "国内详细地址（省市区县无需重复填写）",
+        "Text": ""
     },
     "p1_ShiFZJ": {
         "Required": true,
@@ -2298,7 +2343,7 @@
                 1
             ]
         ],
-        "SelectedValue": "否"
+        "SelectedValue": null
     },
     "p1_GaoZDFXLJS": {
         "F_Items": [
@@ -2323,28 +2368,22 @@
                 1
             ]
         ],
-        "SelectedValue": "无"
+        "SelectedValue": null
     },
     "p1_QueZHZJC": {
         "F_Items": [
             [
                 "是",
                 "是",
-                1,
-                "",
-                ""
+                1
             ],
             [
                 "否",
                 "否",
-                1,
-                "",
-                ""
+                1
             ]
         ],
-        "SelectedValueArray": [
-            "否"
-        ]
+        "SelectedValue": null
     },
     "p1_DangRGL": {
         "SelectedValue": "否",
@@ -2383,8 +2422,7 @@
         "SelectedValue": null
     },
     "p1_GeLDZ": {
-        "Hidden": true,
-        "Required": false
+        "Hidden": true
     },
     "p1_ctl01_btnReturn": {
         "OnClientClick": "document.location.href='/Default.aspx';return;"
