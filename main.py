@@ -69,7 +69,7 @@ def report_day(sess, t):
     BaoSRQ = t.strftime('%Y-%m-%d')
     ShiFSH, JinXXQ, ShiFZX, XiaoQu, ddlSheng, ddlShi, ddlXian, ddlJieDao, XiangXDZ, ShiFZJ = get_last_report(sess, t)
     XingCM = ''
-    if 'IMG' in os.environ:
+    if os.environ['IMG'] != '':
         ShouJHM = get_ShouJHM(sess)
         XingCM = get_img_value(sess, ShouJHM, t)
 
