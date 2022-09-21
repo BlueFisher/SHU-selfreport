@@ -76,6 +76,7 @@ jobs:
           USERS: ${{ secrets.USERS }}
           HTTPS_PROXY: ${{ secrets.HTTPS_PROXY }}
           DISABLE_PULL_REMOTE: ${{ secrets.DISABLE_PULL_REMOTE }}
+          IMG: ${{ secrets.IMG }}
         run: |
           if [[ $DISABLE_PULL_REMOTE == '' ]]; then
             echo "Report from remote";
