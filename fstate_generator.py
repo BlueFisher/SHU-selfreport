@@ -99,7 +99,7 @@ def get_last_report(sess, t):
                 print(ShiFZX)
             if 'XiaoQu' in h:
                 print('-XiaoQu-')
-                XiaoQu = "" if "不在上海" in ShiFSH else _html_to_json(htmls[i - 1])['Text']
+                XiaoQu = "" if "不在上海" in ShiFSH or ShiFZX == "否" else _html_to_json(htmls[i - 1])['Text']
                 print(XiaoQu)
             if 'ddlSheng' in h:
                 print('-ddlSheng-')
